@@ -8,11 +8,9 @@ namespace backend.Services
 {
 	public class CustomerService : ICustomerService
 	{
-		List<Customer> Customers { get; }
 		SellerContext DbContext;
 		public CustomerService(SellerContext context)
 		{
-			Customers = new List<Customer>();
 			DbContext = context;
 		}
 
@@ -28,6 +26,7 @@ namespace backend.Services
 
 		public bool Add(Customer newCustomer)
 		{
+			
 			DbContext.Customers.Add(newCustomer);
 			DbContext.SaveChanges();
 			return (true);

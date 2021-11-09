@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using backend.Services;
 using backend.Models;
 using backend.Data;
@@ -19,13 +20,30 @@ namespace backend.Controllers
 			customerService = new CustomerService(dbContext);
 		}
 
+		// GET all action
+		/// <summary>
+		/// Solicita a lista de todos os customers
+		/// </summary>
+		/// <response code="200"> Se tudo estiver correto </response>
+		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
 		[HttpGet]
+		[ProducesResponseType(typeof(List<Customer>), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
 		public ActionResult<List<Customer>> GetAll()
 		{
 			return (customerService.GetAll());
 		}
 
+		// GET by Id action
+		/// <summary>
+		/// Solicita o customer por id
+		/// </summary>
+		/// <param name="id"> id do customer </param>
+		/// <response code="200"> Se tudo estiver correto </response>
+		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
 		[HttpGet("{id}")]
+		[ProducesResponseType(typeof(Customer), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
 		public ActionResult<Customer> GetActionResult(int id)
 		{
 			var customer = customerService.Get(id);
@@ -36,6 +54,8 @@ namespace backend.Controllers
 		}
 
 		[HttpPost]
+		[ProducesResponseType(typeof(Customer), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
 		public IActionResult Create(Customer customer)
 		{
 			customerService.Add(customer);
@@ -43,6 +63,10 @@ namespace backend.Controllers
 		}
 
 		[HttpPut("{id}")]
+		[ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
+		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
 		public IActionResult Update(int id, Customer customer)
 		{
 			if (id != customer.Id)
@@ -56,6 +80,9 @@ namespace backend.Controllers
 		}
 
 		[HttpDelete("{id}")]
+		[ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
+		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
 		public IActionResult Delete(int id)
 		{
 			if (customerService.Delete(id) == false)
