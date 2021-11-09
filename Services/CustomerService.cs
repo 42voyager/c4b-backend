@@ -47,7 +47,7 @@ namespace backend.Services
 			var customer = DbContext.Customers.FirstOrDefault(p => p.Id == updateCustomer.Id);
 			if (customer == null)
 				return false;
-			customer.Nome = updateCustomer.Nome;
+			customer.Name = updateCustomer.Name;
 			customer.Email = updateCustomer.Email;
 			customer.Cellphone = updateCustomer.Cellphone;
 			customer.Cnpj = updateCustomer.Cnpj;

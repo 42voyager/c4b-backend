@@ -9,7 +9,7 @@ namespace backend.Models
 		[Required]
 		[StringLength(150, ErrorMessage = "O nome deve ser menor ou igual a 150 caracteres!")]
 		[MinLength(2, ErrorMessage = "O nome deve ser maior ou igual a 2 caracteres!")]
-		public string Nome { get; set; }
+		public string Name { get; set; }
 
 		[Required]
 		[EmailAddress]
