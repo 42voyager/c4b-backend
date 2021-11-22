@@ -5,6 +5,8 @@ using System.IO;
 using MailKit;
 using MimeKit;
 using Newtonsoft.Json;
+using System;
+using System.Globalization;
 
 namespace backend.Services
 {
@@ -12,7 +14,7 @@ namespace backend.Services
 	{
 		public void SendEmail(Customer newCustomer)
 		{
-			// We create the json file that will be attached to the email
+			// We create the path of json file that will be attached to the email
 			string attachmentPath = Directory.GetCurrentDirectory() + $"/JsonData/jsondata-{newCustomer.Id}.json";
 			this.PrepareCustomerJson(newCustomer, attachmentPath);
 
@@ -23,9 +25,7 @@ namespace backend.Services
 
 			message.Subject = "Nova solicitacao de credito: Usuario " + newCustomer.Name;
 
-			var builder = new BodyBuilder();
-			builder.TextBody = @$"Hey Marcus, enviamos as informações do usuário: {newCustomer.Name}, está tudo no anexo";
-			builder.Attachments.Add(attachmentPath);
+			var builder = this.GenerateBuilder(newCustomer, attachmentPath);
 			message.Body = builder.ToMessageBody();
 
 			using (var client = new SmtpClient(new ProtocolLogger ("smtp.log")))
@@ -39,6 +39,22 @@ namespace backend.Services
 			}
 		}
 
+		private BodyBuilder GenerateBuilder(Customer newCustomer, String attachmentPath)
+		{
+			DateTime localDate = DateTime.Now;
+
+			var builder = new BodyBuilder();
+			builder.HtmlBody = string.Format(
+				@$"<div style='background-color: #b29475; width: 100%; padding: 50px 30px; text-align: center;'>
+				<h1 style='font-size= 14px; '>Pedido - {localDate.ToString()} <br>id - {newCustomer.Id}</h1> 
+				<p>Nova solicitação de crédito, feita pelo usuário {newCustomer.Name}</p>
+				<p>Todas as informações disponiveis estão guardadas no json anexado!</p>
+				<p></p><br>
+				<p style='margin: 40px; padding: 20px; background: white; color: #b29475;'>Equipe Voyager.</p>
+				</div>");
+			builder.Attachments.Add(attachmentPath);
+			return (builder);
+		}
 		private void PrepareCustomerJson(Customer newCustomer, string path)
 		{
 			var responseData = newCustomer;
