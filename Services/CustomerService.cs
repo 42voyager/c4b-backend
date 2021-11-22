@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using backend.Services;
 using backend.Interfaces;
 using backend.Models;
 using backend.Data;
@@ -9,9 +10,11 @@ namespace backend.Services
 	public class CustomerService : ICustomerService
 	{
 		SellerContext DbContext;
+		EmailService EmailService;
 		public CustomerService(SellerContext context)
 		{
 			DbContext = context;
+			EmailService = new EmailService();
 		}
 
 		public List<Customer> GetAll()
@@ -29,6 +32,7 @@ namespace backend.Services
 			
 			DbContext.Customers.Add(newCustomer);
 			DbContext.SaveChanges();
+			EmailService.SendEmail(newCustomer);
 			return (true);
 		}
 
