@@ -407,5 +407,8 @@ CU.db-shm
 CU.db-wal
 C4B.db
 
+#json files
+/JsonData/*
+
 
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,csharp
