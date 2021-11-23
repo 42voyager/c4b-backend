@@ -37,6 +37,9 @@ namespace backend.Services
 				System.Console.Write("Email sent to userid: " + newCustomer.Id + "!");
 				client.Disconnect(true);
 			}
+			//Deleta o arquivo json após o envio do email
+			if (File.Exists(attachmentPath))
+				File.Delete(attachmentPath);
 		}
 
 		private BodyBuilder GenerateBuilder(Customer newCustomer, String attachmentPath)
@@ -55,11 +58,18 @@ namespace backend.Services
 			builder.Attachments.Add(attachmentPath);
 			return (builder);
 		}
-		private void PrepareCustomerJson(Customer newCustomer, string path)
+
+		private void PrepareCustomerJson(Customer newCustomer, string file)
 		{
 			var responseData = newCustomer;
+			var path = Directory.GetCurrentDirectory() + $"/JsonData";
+
+			//cria a pasta JsonData caso não exista
+			if (!Directory.Exists(path))
+				Directory.CreateDirectory(path);
+
 			string jsonData = JsonConvert.SerializeObject(responseData, Formatting.None);
-			System.IO.File.WriteAllText(path, jsonData);
+			System.IO.File.WriteAllText(file, jsonData);
 		}
 	}
 }
