@@ -7,11 +7,18 @@ using MimeKit;
 using Newtonsoft.Json;
 using System;
 using System.Globalization;
+using Microsoft.Extensions.Configuration;
 
 namespace backend.Services
 {
 	public class EmailService : IEmailService
 	{
+		private readonly IConfiguration _configuration;
+		public EmailService(IConfiguration configuration)
+		{
+			_configuration = configuration;
+		}
+
 		public void SendEmail(Customer newCustomer)
 		{
 			// We create the path of json file that will be attached to the email
@@ -19,7 +26,8 @@ namespace backend.Services
 			this.PrepareCustomerJson(newCustomer, attachmentPath);
 
 			var message = new MimeMessage();
-			message.From.Add(new MailboxAddress("Voyaguer", "labs.voyaguer@gmail.com"));
+			// To-do: Improve appsettings names
+			message.From.Add(new MailboxAddress("Voyaguer", _configuration.GetSection("Email:NomeEmail").Value));
 			// For now, We sent the email only to the Administrator. Later we plan to send a confirmation email to the customer
 			message.To.Add(new MailboxAddress("Banco ABC Admin", "buccky.live8@gmail.com"));
 

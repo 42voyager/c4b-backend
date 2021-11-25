@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using backend.Services;
 using backend.Models;
 using backend.Data;
+using backend.Interfaces;
 
 namespace backend.Controllers
 {
@@ -11,13 +12,15 @@ namespace backend.Controllers
 	[Route("[Controller]")]
 	public class CustomerController : ControllerBase
 	{
-		private readonly SellerContext dbContext;
-		private readonly CustomerService customerService;
+		private readonly SellerContext _dbContext;
+		private readonly ICustomerService _customerService;
+		private readonly IEmailService _emailService;
 
-		public CustomerController(SellerContext context)
+		public CustomerController(SellerContext context, ICustomerService customerService, IEmailService emailService)
 		{
-			dbContext = context;
-			customerService = new CustomerService(dbContext);
+			_dbContext = context;
+			_customerService = customerService;
+			_emailService = emailService;
 		}
 
 		// GET all action
@@ -31,7 +34,7 @@ namespace backend.Controllers
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
 		public ActionResult<List<Customer>> GetAll()
 		{
-			return (customerService.GetAll());
+			return (_customerService.GetAll());
 		}
 
 		// GET by Id action
@@ -46,7 +49,7 @@ namespace backend.Controllers
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
 		public ActionResult<Customer> GetActionResult(int id)
 		{
-			var customer = customerService.Get(id);
+			var customer = _customerService.Get(id);
 
 			if (customer == null)
 				return NotFound();
@@ -58,7 +61,10 @@ namespace backend.Controllers
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
 		public IActionResult Create(Customer customer)
 		{
-			customerService.Add(customer);
+			int userId = _customerService.Add(customer);
+			// To-do: Should be async, or use a queue
+			customer.Id = userId;
+			_emailService.SendEmail(customer);
 			return CreatedAtAction(nameof(Create), new { id = customer.Id }, customer);
 		}
 
@@ -71,10 +77,10 @@ namespace backend.Controllers
 		{
 			if (id != customer.Id)
 				return BadRequest();
-			var existingCustomer = customerService.Get(id);
+			var existingCustomer = _customerService.Get(id);
 			if (existingCustomer == null)
 				return NotFound();
-			customerService.Update(customer);
+			_customerService.Update(customer);
 
 			return Ok();
 		}
@@ -85,7 +91,7 @@ namespace backend.Controllers
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
 		public IActionResult Delete(int id)
 		{
-			if (customerService.Delete(id) == false)
+			if (_customerService.Delete(id) == false)
 				return NotFound();
 			return Ok();
 		}

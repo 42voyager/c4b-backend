@@ -37,6 +37,7 @@ namespace backend
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "backend", Version = "v1" });
             });
             services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IEmailService, EmailService>();
 
             services.AddDbContext<SellerContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("SellerContext")));

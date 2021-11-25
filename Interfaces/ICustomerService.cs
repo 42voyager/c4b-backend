@@ -10,7 +10,7 @@ namespace backend.Interfaces
 
 		Customer Get(int id);
 
-		bool Add(Customer newCustomer);
+		int Add(Customer newCustomer);
 
 		bool Delete(int id);
 

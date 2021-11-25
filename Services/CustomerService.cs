@@ -9,46 +9,42 @@ namespace backend.Services
 {
 	public class CustomerService : ICustomerService
 	{
-		SellerContext DbContext;
-		EmailService EmailService;
+		private readonly SellerContext _dbContext;
 		public CustomerService(SellerContext context)
 		{
-			DbContext = context;
-			EmailService = new EmailService();
+			_dbContext = context;
 		}
 
 		public List<Customer> GetAll()
 		{
-			return DbContext.Customers.ToList();
+			return _dbContext.Customers.ToList();
 		}
 
 		public Customer Get(int id)
 		{
-			return DbContext.Customers.FirstOrDefault(p => p.Id == id);
+			return _dbContext.Customers.FirstOrDefault(p => p.Id == id);
 		}
 
-		public bool Add(Customer newCustomer)
+		public int Add(Customer newCustomer)
 		{
-			
-			DbContext.Customers.Add(newCustomer);
-			DbContext.SaveChanges();
-			EmailService.SendEmail(newCustomer);
-			return (true);
+			var result = _dbContext.Customers.Add(newCustomer);
+			_dbContext.SaveChanges();
+			return result.Entity.Id;
 		}
 
 		public bool Delete(int id)
 		{
-			var Customer = DbContext.Customers.Find(id);
+			var Customer = _dbContext.Customers.Find(id);
 			if (Customer == null)
 				return false;
-			DbContext.Customers.Remove(Customer);
-			DbContext.SaveChanges();
+			_dbContext.Customers.Remove(Customer);
+			_dbContext.SaveChanges();
 			return (true);
 		}
 
 		public bool Update(Customer updateCustomer)
 		{
-			var customer = DbContext.Customers.FirstOrDefault(p => p.Id == updateCustomer.Id);
+			var customer = _dbContext.Customers.FirstOrDefault(p => p.Id == updateCustomer.Id);
 			if (customer == null)
 				return false;
 			customer.Limit = updateCustomer.Limit;
@@ -59,7 +55,7 @@ namespace backend.Services
 			customer.Cnpj = updateCustomer.Cnpj;
 			customer.Company = updateCustomer.Company;
 			customer.Optin = updateCustomer.Optin;
-			DbContext.SaveChanges();
+			_dbContext.SaveChanges();
 			return (true);
 		}
 	}
