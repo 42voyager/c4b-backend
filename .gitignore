@@ -406,6 +406,7 @@ CU.db
 CU.db-shm
 CU.db-wal
 C4B.db
+Feedback.db
 
 #json files
 JsonData/

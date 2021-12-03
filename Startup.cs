@@ -38,9 +38,12 @@ namespace backend
             });
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IFeedbackService, FeedbackService>();
 
             services.AddDbContext<SellerContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("SellerContext")));
+            services.AddDbContext<FeedbackContext>(options =>
+                options.UseSqlite(Configuration.GetConnectionString("FeedbackContext")));
             services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
