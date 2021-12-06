@@ -39,5 +39,8 @@ namespace backend.Models
 		[Required]
 		[Range(typeof(bool), "true", "true", ErrorMessage = "Precisa aceitar os termos e condições")]
 		public bool Optin { get; set; }
+		public string IP { get; set; }
+		public string OS { get; set; }
+		public System.DateTime timestamp { get; set; }
 	}
 }

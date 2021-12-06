@@ -55,6 +55,9 @@ namespace backend.Services
 			customer.Cnpj = updateCustomer.Cnpj;
 			customer.Company = updateCustomer.Company;
 			customer.Optin = updateCustomer.Optin;
+			customer.IP = updateCustomer.IP;
+			customer.OS = updateCustomer.OS;
+			customer.timestamp = updateCustomer.timestamp;
 			_dbContext.SaveChanges();
 			return (true);
 		}
