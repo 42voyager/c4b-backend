@@ -41,7 +41,10 @@ namespace backend
             services.AddScoped<IEmailService<Customer>, EmailService<Customer>>();
             services.AddScoped<IEmailService<Feedback>, EmailService<Feedback>>();
             services.AddScoped<IFeedbackService, FeedbackService>();
+            services.AddScoped<IRecaptchaService, RecaptchaService>();
 
+            services.AddHttpClient<IRecaptchaService,RecaptchaService>();
+            
             services.AddDbContext<SellerContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("SellerContext")));
             services.AddDatabaseDeveloperPageExceptionFilter();
