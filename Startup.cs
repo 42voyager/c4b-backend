@@ -14,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using backend.Interfaces;
 using backend.Services;
 using backend.Data;
+using backend.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend
@@ -37,7 +38,8 @@ namespace backend
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "backend", Version = "v1" });
             });
             services.AddScoped<ICustomerService, CustomerService>();
-            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IEmailService<Customer>, EmailService<Customer>>();
+            services.AddScoped<IEmailService<Feedback>, EmailService<Feedback>>();
             services.AddScoped<IFeedbackService, FeedbackService>();
             services.AddScoped<IRecaptchaService, RecaptchaService>();
 
@@ -45,8 +47,6 @@ namespace backend
             
             services.AddDbContext<SellerContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("SellerContext")));
-            services.AddDbContext<FeedbackContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("FeedbackContext")));
             services.AddDatabaseDeveloperPageExceptionFilter();
         }
 

@@ -9,9 +9,9 @@ namespace backend.Services
 {
 	public class FeedbackService : IFeedbackService
 	{
-		private readonly FeedbackContext _dbContext;
+		private readonly SellerContext _dbContext;
 
-		public FeedbackService(FeedbackContext context)
+		public FeedbackService(SellerContext context)
 		{
 			_dbContext = context;
 		}
