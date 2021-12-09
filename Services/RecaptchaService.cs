@@ -20,7 +20,10 @@ namespace backend.Services
 			_minScore = 0.5;
 		}
 		public async Task<bool> ValidateRecaptchaScore(string token)
-		{ 
+		{
+			// For now, if the token fails we just return true 
+			if (token == null) return true;
+
 			var values = new Dictionary<string, string>
 				{
 					{ "secret", _secret },
