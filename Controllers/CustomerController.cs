@@ -5,6 +5,8 @@ using backend.Services;
 using backend.Models;
 using backend.Data;
 using backend.Interfaces;
+using System;
+using System.Globalization;
 
 namespace backend.Controllers
 {
@@ -14,9 +16,9 @@ namespace backend.Controllers
 	{
 		private readonly SellerContext _dbContext;
 		private readonly ICustomerService _customerService;
-		private readonly IEmailService _emailService;
+		private readonly IEmailService<Customer> _emailService;
 
-		public CustomerController(SellerContext context, ICustomerService customerService, IEmailService emailService)
+		public CustomerController(SellerContext context, ICustomerService customerService, IEmailService<Customer> emailService)
 		{
 			_dbContext = context;
 			_customerService = customerService;
@@ -64,7 +66,8 @@ namespace backend.Controllers
 			int userId = _customerService.Add(customer);
 			// To-do: Should be async, or use a queue
 			customer.Id = userId;
-			_emailService.SendEmail(customer);
+			var email = prepareEmail(customer);
+			_emailService.SendEmail(customer, customer.Id, email);
 			return CreatedAtAction(nameof(Create), new { id = customer.Id }, customer);
 		}
 
@@ -94,6 +97,23 @@ namespace backend.Controllers
 			if (_customerService.Delete(id) == false)
 				return NotFound();
 			return Ok();
+		}
+
+		private Email prepareEmail(Customer customer)
+		{
+			DateTime localDate = DateTime.Now;
+			var email = new Email();
+
+			email.Subject = $"Nova solicitação de crédito: Empresa {customer.Company}";
+			email.Body = string.Format(
+					@$"<div style='background-color: #b29475; width: 100%; padding: 50px 30px; text-align: center;'>
+					<h1 style='font-size= 14px; '>Pedido - {localDate.ToString()} <br>id - {customer.Id}</h1> 
+					<p>Nova solicitação de crédito, feita pelo empresa {customer.Company}</p>
+					<p>Todas as informações disponiveis estão guardadas no json anexado!</p>
+					<p></p><br>
+					<p style='margin: 40px; padding: 20px; background: white; color: #b29475;'>Equipe Voyager.</p>
+					</div>");
+			return email;
 		}
 	}
 }

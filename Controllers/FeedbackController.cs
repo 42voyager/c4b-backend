@@ -5,6 +5,8 @@ using backend.Services;
 using backend.Models;
 using backend.Interfaces;
 using backend.Data;
+using System;
+using System.Globalization;
 
 namespace backend.Controllers
 {
@@ -14,11 +16,13 @@ namespace backend.Controllers
 	{
 		private readonly SellerContext _dbContext;
 		private readonly IFeedbackService _feedbackService;
+		private readonly IEmailService<Feedback> _emailService;
 
-		public FeedbackController(SellerContext context, IFeedbackService feedbackService)
+		public FeedbackController(SellerContext context, IFeedbackService feedbackService, IEmailService<Feedback> emailService)
 		{
 			_dbContext = context;
 			_feedbackService = feedbackService;
+			_emailService = emailService;
 		}
 
 		// GET all action
@@ -61,6 +65,8 @@ namespace backend.Controllers
 			int feedbackId = _feedbackService.Add(feedback);
 			// To-do: Should be async, or use a queue
 			feedback.Id = feedbackId;
+			var email = prepareEmail(feedback);
+			_emailService.SendEmail(feedback, feedback.Id, email);
 			return CreatedAtAction(nameof(Create), new { id = feedback.Id }, feedback);
 		}
 
@@ -73,6 +79,23 @@ namespace backend.Controllers
 			if (_feedbackService.Delete(id) == false)
 				return NotFound();
 			return Ok();
+		}
+
+		private Email prepareEmail(Feedback feedback)
+		{
+			DateTime localDate = DateTime.Now;
+			var email = new Email();
+
+			email.Subject = $"Novo feedback no site C4B: {feedback.Name}";
+			email.Body = string.Format(
+					@$"<div style='background-color: #b29475; width: 100%; padding: 50px 30px; text-align: center;'>
+					<h1 style='font-size= 14px; '>Pedido - {localDate.ToString()} <br>id - {feedback.Id}</h1> 
+					<p>Novo feedback no site C4B , feito pelo usuario {feedback.Name}</p>
+					<p>Todas as informações disponiveis estão guardadas no json anexado!</p>
+					<p></p><br>
+					<p style='margin: 40px; padding: 20px; background: white; color: #b29475;'>Equipe Voyager.</p>
+					</div>");
+			return email;
 		}
 	}
 }

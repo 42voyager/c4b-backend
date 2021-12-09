@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace backend.Services
 {
-	public class EmailService : IEmailService
+	public class EmailService<T> : IEmailService<T>
 	{
 		private readonly IConfiguration _configuration;
 		public EmailService(IConfiguration configuration)
@@ -19,30 +19,31 @@ namespace backend.Services
 			_configuration = configuration;
 		}
 
-		public void SendEmail(Customer newCustomer)
+		public void SendEmail(T newUser, int Id, Email email)
 		{
 			// We create the path of json file that will be attached to the email
-			string attachmentPath = Directory.GetCurrentDirectory() + $"/JsonData/jsondata-{newCustomer.Id}.json";
-			this.PrepareCustomerJson(newCustomer, attachmentPath);
+			string attachmentPath = Directory.GetCurrentDirectory() + $"/JsonData/jsondata-{Id}.json";
+			this.PrepareCustomerJson(newUser, attachmentPath);
 
 			var message = new MimeMessage();
 			// To-do: Improve appsettings names
-			message.From.Add(new MailboxAddress("Voyaguer", _configuration.GetSection("Email:NomeEmail").Value));
+			message.From.Add(new MailboxAddress("Voyaguer", _configuration.GetSection("Email:MessageFrom").Value));
 			// For now, We sent the email only to the Administrator. Later we plan to send a confirmation email to the customer
-			message.To.Add(new MailboxAddress("Banco ABC Admin", "buccky.live8@gmail.com"));
+			message.To.Add(new MailboxAddress("Banco ABC Admin", _configuration.GetSection("Email:MessageTo").Value));
 
-			message.Subject = "Nova solicitacao de credito: Usuario " + newCustomer.Name;
-
-			var builder = this.GenerateBuilder(newCustomer, attachmentPath);
+			message.Subject = email.Subject;
+			var	builder = new BodyBuilder();
+			builder.HtmlBody = email.Body;
+			builder.Attachments.Add(attachmentPath);
 			message.Body = builder.ToMessageBody();
 
 			using (var client = new SmtpClient(new ProtocolLogger ("smtp.log")))
 			{
-				client.Connect("smtp.gmail.com", 587, false);
+				client.Connect(_configuration.GetSection("Email:SmtpHost").Value, 587, false);
 				// Note: only needed if the SMTP server requires authentication
-				client.Authenticate("labs.voyaguer", "voyaguer123");
+				client.Authenticate(_configuration.GetSection("Email:SmtpUser").Value, _configuration.GetSection("Email:SmtpPassword").Value);
 				client.Send(message);
-				System.Console.Write("Email sent to userid: " + newCustomer.Id + "!");
+				System.Console.Write("Email sent to userid: " + Id + "!");
 				client.Disconnect(true);
 			}
 			//Deleta o arquivo json após o envio do email
@@ -50,26 +51,9 @@ namespace backend.Services
 				File.Delete(attachmentPath);
 		}
 
-		private BodyBuilder GenerateBuilder(Customer newCustomer, String attachmentPath)
+		public void PrepareCustomerJson(T newUser, string file)
 		{
-			DateTime localDate = DateTime.Now;
-
-			var builder = new BodyBuilder();
-			builder.HtmlBody = string.Format(
-				@$"<div style='background-color: #b29475; width: 100%; padding: 50px 30px; text-align: center;'>
-				<h1 style='font-size= 14px; '>Pedido - {localDate.ToString()} <br>id - {newCustomer.Id}</h1> 
-				<p>Nova solicitação de crédito, feita pelo usuário {newCustomer.Name}</p>
-				<p>Todas as informações disponiveis estão guardadas no json anexado!</p>
-				<p></p><br>
-				<p style='margin: 40px; padding: 20px; background: white; color: #b29475;'>Equipe Voyager.</p>
-				</div>");
-			builder.Attachments.Add(attachmentPath);
-			return (builder);
-		}
-
-		private void PrepareCustomerJson(Customer newCustomer, string file)
-		{
-			var responseData = newCustomer;
+			var responseData = newUser;
 			var path = Directory.GetCurrentDirectory() + $"/JsonData";
 
 			//cria a pasta JsonData caso não exista
