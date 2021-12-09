@@ -5,6 +5,7 @@ using backend.Services;
 using backend.Models;
 using backend.Data;
 using backend.Interfaces;
+using System.Threading.Tasks;
 
 namespace backend.Controllers
 {
@@ -15,12 +16,19 @@ namespace backend.Controllers
 		private readonly SellerContext _dbContext;
 		private readonly ICustomerService _customerService;
 		private readonly IEmailService _emailService;
+		private readonly IRecaptchaService _recaptchaService;
 
-		public CustomerController(SellerContext context, ICustomerService customerService, IEmailService emailService)
+		public CustomerController(
+			SellerContext context, 
+			ICustomerService customerService, 
+			IEmailService emailService,
+			IRecaptchaService recaptchService
+		)
 		{
 			_dbContext = context;
 			_customerService = customerService;
 			_emailService = emailService;
+			_recaptchaService = recaptchService;
 		}
 
 		// GET all action
@@ -59,13 +67,21 @@ namespace backend.Controllers
 		[HttpPost]
 		[ProducesResponseType(typeof(Customer), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public IActionResult Create(Customer customer)
+		[ProducesResponseType(typeof(object), StatusCodes.Status401Unauthorized)]
+		public async Task<IActionResult> Create(CustomerView customer)
 		{
-			int userId = _customerService.Add(customer);
-			// To-do: Should be async, or use a queue
-			customer.Id = userId;
-			_emailService.SendEmail(customer);
-			return CreatedAtAction(nameof(Create), new { id = customer.Id }, customer);
+			bool isHuman = await _recaptchaService.ValidateRecaptchaScore(customer.RecaptchaToken);
+
+			if (isHuman == true)
+			{
+				int userId = _customerService.Add(customer);
+				customer.Id = userId;
+				// To-do: Should be async, or use a queue
+				_emailService.SendEmail(customer);
+				return CreatedAtAction(nameof(Create), new { id = customer.Id }, customer);
+			}
+			else
+				return Unauthorized();
 		}
 
 		[HttpPut("{id}")]
