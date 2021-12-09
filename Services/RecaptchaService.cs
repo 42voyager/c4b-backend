@@ -4,20 +4,24 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace backend.Services
 {
 	public class RecaptchaService : IRecaptchaService
 	{
+		private readonly IConfiguration _configuration;
 		private readonly string _secret;
 		private readonly double _minScore;
-		private static readonly HttpClient _client = new HttpClient();
+		private readonly HttpClient _client;
 		private readonly string _apiUrl;
-		public RecaptchaService()
+		public RecaptchaService(HttpClient client, IConfiguration configuration)
 		{
-			_secret = "6LfrEXUdAAAAAMkL4sDemtSjhQu1uN66UGf3P_W3";
-			_apiUrl = "https://www.google.com/recaptcha/api/siteverify";
-			_minScore = 0.5;
+			_configuration = configuration; 
+			_secret = _configuration.GetSection("Recaptcha:Secret").Value;
+			_minScore = double.Parse(_configuration.GetSection("Recaptcha:MinScore").Value);
+			_client = client;
+			_apiUrl = _configuration.GetSection("Recaptcha:ApiUrl").Value;
 		}
 		public async Task<bool> ValidateRecaptchaScore(string token)
 		{
