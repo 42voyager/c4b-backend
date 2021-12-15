@@ -8,6 +8,7 @@ using backend.Interfaces;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace backend.Controllers
 {
@@ -69,13 +70,14 @@ namespace backend.Controllers
 		[HttpPost]
 		[ProducesResponseType(typeof(Customer), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		[ProducesResponseType(typeof(object), StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(typeof(object), StatusCodes.Status429TooManyRequests)]
 		public async Task<IActionResult> Create(CustomerView customer)
 		{
 			bool isHuman = await _recaptchaService.ValidateRecaptchaScore(customer.RecaptchaToken);
 
 			if (isHuman == true)
 			{
+				customer.RecaptchaToken = null;
 				int userId = _customerService.Add(customer);
 				customer.Id = userId;
 				// To-do: Should be async, or use a queue
@@ -84,7 +86,7 @@ namespace backend.Controllers
 				return CreatedAtAction(nameof(Create), new { id = customer.Id }, customer);
 			}
 			else
-				return Unauthorized();
+				return new StatusCodeResult(429);
 		}
 
 		[HttpPut("{id}")]
