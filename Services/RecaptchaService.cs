@@ -37,7 +37,7 @@ namespace backend.Services
 			var content = new FormUrlEncodedContent(values);
 			var response = await _client.PostAsync(_apiUrl, content);
 			var responseString = await response.Content.ReadAsStringAsync();
-			Recaptcha info = JsonConvert.DeserializeObject<Recaptcha>(responseString);
+			RecaptchaResponse info = JsonConvert.DeserializeObject<RecaptchaResponse>(responseString);
 
 			if (info.score >= _minScore)
 				return (true);
