@@ -3,6 +3,9 @@
 # criando os arquivos para o deploy
 dotnet publish -c Release
 
+# para o container
+docker stop voyager-api-container
+
 # deleta image antiga
 docker rmi voyager-api
 
