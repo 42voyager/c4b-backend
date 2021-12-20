@@ -6,7 +6,7 @@ namespace backend.Interfaces
 {
 	public interface IEmailService<T>
 	{
-		void SendEmail(T newUser, int Id, Email email);
+		void SendEmail(Email email);
 
 		//BodyBuilder GenerateBuilder(T newUser, string attachmentPath, int Id, string Company);
 

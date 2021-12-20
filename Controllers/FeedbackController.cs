@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using backend.Services;
 using backend.Models;
 using backend.Interfaces;
 using backend.Data;
 using System;
-using System.Globalization;
+using System.IO;
 
 namespace backend.Controllers
 {
@@ -65,8 +64,8 @@ namespace backend.Controllers
 			int feedbackId = _feedbackService.Add(feedback);
 			// To-do: Should be async, or use a queue
 			feedback.Id = feedbackId;
-			var email = prepareEmail(feedback);
-			_emailService.SendEmail(feedback, feedback.Id, email);
+			var email = PrepareEmailFeedback(feedback);
+			_emailService.SendEmail(email);
 			return CreatedAtAction(nameof(Create), new { id = feedback.Id }, feedback);
 		}
 
@@ -81,19 +80,26 @@ namespace backend.Controllers
 			return Ok();
 		}
 
-		private Email prepareEmail(Feedback feedback)
+		private Email PrepareEmailFeedback(Feedback feedback)
 		{
 			DateTime localDate = DateTime.Now;
+			string attachmentPath = Directory.GetCurrentDirectory() + $"/JsonData/jsonDataFeedback-{feedback.Id}.json";
 			var email = new Email();
-
+			
+			// We create the path of json file that will be attached to the email
+			_emailService.PrepareCustomerJson(feedback, attachmentPath);
+			email.AttachmentPath = attachmentPath;
 			email.Subject = $"Novo feedback no site C4B: {feedback.Name}";
 			email.Body = string.Format(
-					@$"<div style='background-color: #b29475; width: 100%; padding: 50px 30px; text-align: center;'>
-					<h1 style='font-size= 14px; '>Pedido - {localDate.ToString()} <br>id - {feedback.Id}</h1> 
-					<p>Novo feedback no site C4B , feito pelo usuario {feedback.Name}</p>
-					<p>Todas as informações disponiveis estão guardadas no json anexado!</p>
-					<p></p><br>
-					<p style='margin: 40px; padding: 20px; background: white; color: #b29475;'>Equipe Voyager.</p>
+					@$"<div style='max-width: 100%; width: calc(100% - 60px); padding: 30px 30px; text-align: center;'>
+						<h1 style='font-size= 14px; '>Novo feedback <br> {localDate.ToString()}</h1><br>
+						<div style='border: 1px solid #b29475; text-align: left; padding: 10px 25px'>
+						<p style='border-bottom: 1px solid #b29475;'>Nome: {feedback.Name}</p>
+						<p style='border-bottom: 1px solid #b29475;'>Email: {feedback.Email}</p>
+						<p style='border-bottom: 1px solid #b29475;'>Mensagem:<br>{feedback.Message}</p>
+						</div><br>
+						<hr style='border: 2px solid #b29475;'>
+						<p style='padding: 10px; color: #b29475;'>Equipe Voyager.</p>
 					</div>");
 			return email;
 		}

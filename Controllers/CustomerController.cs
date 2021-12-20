@@ -1,14 +1,12 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using backend.Services;
 using backend.Models;
 using backend.Data;
 using backend.Interfaces;
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
-using System.Net.Http;
+using System.IO;
 
 namespace backend.Controllers
 {
@@ -82,7 +80,7 @@ namespace backend.Controllers
 				customer.Id = userId;
 				// To-do: Should be async, or use a queue
 				var email = prepareEmail(customer);
-				_emailService.SendEmail(customer, customer.Id, email);
+				_emailService.SendEmail(email);
 				return CreatedAtAction(nameof(Create), new { id = customer.Id }, customer);
 			}
 			else
@@ -120,16 +118,20 @@ namespace backend.Controllers
 		private Email prepareEmail(Customer customer)
 		{
 			DateTime localDate = DateTime.Now;
+			string attachmentPath = Directory.GetCurrentDirectory() + $"/JsonData/jsonDataCustomer-{customer.Id}.json";
 			var email = new Email();
 
+			_emailService.PrepareCustomerJson(customer, attachmentPath);
+			email.AttachmentPath = attachmentPath;
 			email.Subject = $"Nova solicitação de crédito: Empresa {customer.Company}";
 			email.Body = string.Format(
-					@$"<div style='background-color: #b29475; width: 100%; padding: 50px 30px; text-align: center;'>
-					<h1 style='font-size= 14px; '>Pedido - {localDate.ToString()} <br>id - {customer.Id}</h1> 
+					@$"<div style='max-width: 100%; width: calc(100% - 60px); padding: 30px 30px; text-align: center;'>
+					<h1 style='font-size= 14px; '>Nova Solicitação <br>{localDate.ToString()}</h1> 
 					<p>Nova solicitação de crédito, feita pelo empresa {customer.Company}</p>
 					<p>Todas as informações disponiveis estão guardadas no json anexado!</p>
 					<p></p><br>
-					<p style='margin: 40px; padding: 20px; background: white; color: #b29475;'>Equipe Voyager.</p>
+					<hr style='border: 2px solid #b29475;'>
+  					<p style='padding: 10px; color: #b29475;'>Equipe Voyager.</p>
 					</div>");
 			return email;
 		}
