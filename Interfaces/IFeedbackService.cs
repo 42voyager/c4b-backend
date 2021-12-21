@@ -1,16 +1,17 @@
 using backend.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace backend.Interfaces
 {
 	public interface IFeedbackService
 	{
-		List<Feedback> GetAll();
+		Task<List<Feedback>> GetAllAsync();
 
-		Feedback Get(int id);
+		Task<Feedback> GetAsync(int id);
 
-		int Add(Feedback newFeedback);
+		Task<int> AddAsync(Feedback newFeedback);
 
-		bool Delete(int id);
+		Task<bool> DeleteAsync(int id);
 	}
 }

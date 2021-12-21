@@ -6,6 +6,7 @@ using backend.Interfaces;
 using backend.Data;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace backend.Controllers
 {
@@ -16,12 +17,20 @@ namespace backend.Controllers
 		private readonly SellerContext _dbContext;
 		private readonly IFeedbackService _feedbackService;
 		private readonly IEmailService<Feedback> _emailService;
+		private readonly IRecaptchaService _recaptchaService;
 
-		public FeedbackController(SellerContext context, IFeedbackService feedbackService, IEmailService<Feedback> emailService)
+
+		public FeedbackController(
+			SellerContext context,
+			IFeedbackService feedbackService,
+			IEmailService<Feedback> emailService,
+			IRecaptchaService recaptchaService
+			)
 		{
 			_dbContext = context;
 			_feedbackService = feedbackService;
 			_emailService = emailService;
+			_recaptchaService = recaptchaService;
 		}
 
 		// GET all action
@@ -33,9 +42,9 @@ namespace backend.Controllers
 		[HttpGet]
 		[ProducesResponseType(typeof(List<Feedback>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public ActionResult<List<Feedback>> GetAll()
+		public async Task<ActionResult<List<Feedback>>> GetAll()
 		{
-			return (_feedbackService.GetAll());
+			return (await _feedbackService.GetAllAsync());
 		}
 
 		// GET all action
@@ -47,9 +56,9 @@ namespace backend.Controllers
 		[HttpGet("{id}")]
 		[ProducesResponseType(typeof(List<Feedback>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public ActionResult<Feedback> GetActionResult(int id)
+		public async Task<ActionResult<Feedback>> GetActionResult(int id)
 		{
-			var feedback = _feedbackService.Get(id);
+			var feedback = await _feedbackService.GetAsync(id);
 
 			if (feedback == null)
 				return NotFound();
@@ -59,35 +68,43 @@ namespace backend.Controllers
 		[HttpPost]
 		[ProducesResponseType(typeof(Feedback), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public IActionResult Create(Feedback feedback)
+		public async Task<IActionResult> Create(FeedbackView feedback)
 		{
-			int feedbackId = _feedbackService.Add(feedback);
-			// To-do: Should be async, or use a queue
-			feedback.Id = feedbackId;
-			var email = PrepareEmailFeedback(feedback);
-			_emailService.SendEmail(email);
-			return CreatedAtAction(nameof(Create), new { id = feedback.Id }, feedback);
+			bool isHuman = await _recaptchaService.ValidateRecaptchaScore(feedback.RecaptchaToken);
+			
+			if (isHuman == true)
+			{
+				var feedbackId = _feedbackService.AddAsync(feedback);
+				feedback.Id = await feedbackId;
+				var email = await PrepareEmailFeedback(feedback);
+				var send = _emailService.SendEmailAsync(email);
+				await Task.WhenAny(feedbackId, send);
+				return CreatedAtAction(nameof(Create), new { id = feedback.Id }, feedback);
+			}
+			else
+				return new StatusCodeResult(429);
 		}
 
 		[HttpDelete("{id}")]
 		[ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public IActionResult Delete(int id)
+		public async Task<IActionResult> Delete(int id)
 		{
-			if (_feedbackService.Delete(id) == false)
+			bool feedback = await _feedbackService.DeleteAsync(id);
+			if ( feedback == false)
 				return NotFound();
 			return Ok();
 		}
 
-		private Email PrepareEmailFeedback(Feedback feedback)
+		private async Task<Email> PrepareEmailFeedback(Feedback feedback)
 		{
 			DateTime localDate = DateTime.Now;
 			string attachmentPath = Directory.GetCurrentDirectory() + $"/JsonData/jsonDataFeedback-{feedback.Id}.json";
 			var email = new Email();
 			
 			// We create the path of json file that will be attached to the email
-			_emailService.PrepareCustomerJson(feedback, attachmentPath);
+			await _emailService.PrepareCustomerJsonAsync(feedback, attachmentPath);
 			email.AttachmentPath = attachmentPath;
 			email.Subject = $"Novo feedback no site C4B: {feedback.Name}";
 			email.Body = string.Format(

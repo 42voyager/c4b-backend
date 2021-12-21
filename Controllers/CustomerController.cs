@@ -41,9 +41,9 @@ namespace backend.Controllers
 		[HttpGet]
 		[ProducesResponseType(typeof(List<Customer>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public ActionResult<List<Customer>> GetAll()
+		public async Task<ActionResult<List<Customer>>> GetAll()
 		{
-			return (_customerService.GetAll());
+			return ( await _customerService.GetAllAsync());
 		}
 
 		// GET by Id action
@@ -56,9 +56,9 @@ namespace backend.Controllers
 		[HttpGet("{id}")]
 		[ProducesResponseType(typeof(Customer), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public ActionResult<Customer> GetActionResult(int id)
+		public async Task<ActionResult<Customer>> GetActionResult(int id)
 		{
-			var customer = _customerService.Get(id);
+			var customer = await _customerService.GetAsync(id);
 
 			if (customer == null)
 				return NotFound();
@@ -75,12 +75,11 @@ namespace backend.Controllers
 
 			if (isHuman == true)
 			{
-				customer.RecaptchaToken = null;
-				int userId = _customerService.Add(customer);
-				customer.Id = userId;
-				// To-do: Should be async, or use a queue
-				var email = prepareEmail(customer);
-				_emailService.SendEmail(email);
+				var userId =  _customerService.AddAsync(customer);
+				customer.Id = await userId;
+				var email = await prepareEmail(customer);
+				var send = _emailService.SendEmailAsync(email);
+				await Task.WhenAny(userId, send);
 				return CreatedAtAction(nameof(Create), new { id = customer.Id }, customer);
 			}
 			else
@@ -92,15 +91,14 @@ namespace backend.Controllers
 		[ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public IActionResult Update(int id, Customer customer)
+		public async Task<IActionResult> Update(int id, Customer customer)
 		{
 			if (id != customer.Id)
 				return BadRequest();
-			var existingCustomer = _customerService.Get(id);
+			var existingCustomer = await _customerService.GetAsync(id);
 			if (existingCustomer == null)
 				return NotFound();
-			_customerService.Update(customer);
-
+			await _customerService.UpdateAsync(customer);
 			return Ok();
 		}
 
@@ -108,26 +106,27 @@ namespace backend.Controllers
 		[ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public IActionResult Delete(int id)
+		public async Task<IActionResult> Delete(int id)
 		{
-			if (_customerService.Delete(id) == false)
+			bool customer = await _customerService.DeleteAsync(id);
+			if (customer == false)
 				return NotFound();
 			return Ok();
 		}
 
-		private Email prepareEmail(Customer customer)
+		private async Task<Email> prepareEmail(Customer customer)
 		{
 			DateTime localDate = DateTime.Now;
 			string attachmentPath = Directory.GetCurrentDirectory() + $"/JsonData/jsonDataCustomer-{customer.Id}.json";
 			var email = new Email();
 
-			_emailService.PrepareCustomerJson(customer, attachmentPath);
+			await _emailService.PrepareCustomerJsonAsync(customer, attachmentPath);
 			email.AttachmentPath = attachmentPath;
 			email.Subject = $"Nova solicitação de crédito: Empresa {customer.Company}";
 			email.Body = string.Format(
 					@$"<div style='max-width: 100%; width: calc(100% - 60px); padding: 30px 30px; text-align: center;'>
 					<h1 style='font-size= 14px; '>Nova Solicitação <br>{localDate.ToString()}</h1> 
-					<p>Nova solicitação de crédito, feita pelo empresa {customer.Company}</p>
+					<p>Nova solicitação de crédito, feita pela empresa {customer.Company}</p>
 					<p>Todas as informações disponiveis estão guardadas no json anexado!</p>
 					<p></p><br>
 					<hr style='border: 2px solid #b29475;'>
