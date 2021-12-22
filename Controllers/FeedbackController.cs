@@ -78,7 +78,7 @@ namespace backend.Controllers
 				feedback.Id = await feedbackId;
 				var email = await PrepareEmailFeedback(feedback);
 				var send = _emailService.SendEmailAsync(email);
-				await Task.WhenAny(feedbackId, send);
+				await Task.WhenAll(feedbackId);
 				return CreatedAtAction(nameof(Create), new { id = feedback.Id }, feedback);
 			}
 			else

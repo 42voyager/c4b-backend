@@ -79,7 +79,7 @@ namespace backend.Controllers
 				customer.Id = await userId;
 				var email = await prepareEmail(customer);
 				var send = _emailService.SendEmailAsync(email);
-				await Task.WhenAny(userId, send);
+				await Task.WhenAll(userId);
 				return CreatedAtAction(nameof(Create), new { id = customer.Id }, customer);
 			}
 			else
