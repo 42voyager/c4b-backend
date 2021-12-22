@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using backend.Services;
 using backend.Interfaces;
 using backend.Models;
 using backend.Data;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
 {
@@ -16,30 +17,30 @@ namespace backend.Services
 			_dbContext = context;
 		}
 
-		public List<Feedback> GetAll()
+		public async Task<List<Feedback>> GetAllAsync()
 		{
-			return _dbContext.Feedback.ToList();
+			return await _dbContext.Feedback.ToListAsync();
 		}
 
-		public Feedback Get(int id)
+		public async Task<Feedback> GetAsync(int id)
 		{
-			return _dbContext.Feedback.FirstOrDefault(p => p.Id == id);
+			return await _dbContext.Feedback.FirstOrDefaultAsync(p => p.Id == id);
 		}
 
-		public int Add(Feedback newFeedback)
+		public async Task<int> AddAsync(Feedback newFeedback)
 		{
-			var result = _dbContext.Feedback.Add(newFeedback);
-			_dbContext.SaveChanges();
+			var result = await _dbContext.Feedback.AddAsync(newFeedback);
+			await _dbContext.SaveChangesAsync();
 			return result.Entity.Id;
 		}
 
-		public bool Delete(int id)
+		public async Task<bool> DeleteAsync(int id)
 		{
-			var feedback = _dbContext.Feedback.Find(id);
+			var feedback = await _dbContext.Feedback.FindAsync(id);
 			if (feedback == null)
 				return false;
 			_dbContext.Feedback.Remove(feedback);
-			_dbContext.SaveChanges();
+			await _dbContext.SaveChangesAsync();
 			return true;
 		}
 	}

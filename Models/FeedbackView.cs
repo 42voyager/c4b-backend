@@ -1,11 +1,11 @@
-
 using System.Text.Json.Serialization;
 
 namespace backend.Models
 {
-	public class CustomerView: Customer
+	public class FeedbackView: Feedback
 	{
 		[JsonIgnore]
 		public string RecaptchaToken { get; set; }
+
 	}
 }

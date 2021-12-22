@@ -1,19 +1,19 @@
 using backend.Models;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 
 namespace backend.Interfaces 
 {
 	public interface ICustomerService
 	{
-		List<Customer> GetAll();
+		Task<List<Customer>> GetAllAsync();
 
-		Customer Get(int id);
+		Task<Customer> GetAsync(int id);
 
-		int Add(Customer newCustomer);
+		Task<int> AddAsync(Customer newCustomer);
 
-		bool Delete(int id);
+		Task<bool> DeleteAsync(int id);
 
-		bool Update(Customer updateCustomer);
+		Task<bool> UpdateAsync(Customer updateCustomer);
 	}
 }

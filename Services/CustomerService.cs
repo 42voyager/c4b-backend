@@ -4,6 +4,8 @@ using backend.Interfaces;
 using backend.Models;
 using backend.Data;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
 {
@@ -15,36 +17,36 @@ namespace backend.Services
 			_dbContext = context;
 		}
 
-		public List<Customer> GetAll()
+		public async Task<List<Customer>> GetAllAsync()
 		{
-			return _dbContext.Customers.ToList();
+			return await _dbContext.Customers.ToListAsync();
 		}
 
-		public Customer Get(int id)
+		public async Task<Customer> GetAsync(int id)
 		{
-			return _dbContext.Customers.FirstOrDefault(p => p.Id == id);
+			return await _dbContext.Customers.FirstOrDefaultAsync(p => p.Id == id);
 		}
 
-		public int Add(Customer newCustomer)
+		public async Task<int> AddAsync(Customer newCustomer)
 		{
-			var result = _dbContext.Customers.Add(newCustomer);
-			_dbContext.SaveChanges();
+			var result = await _dbContext.Customers.AddAsync(newCustomer);
+			await _dbContext.SaveChangesAsync();
 			return result.Entity.Id;
 		}
 
-		public bool Delete(int id)
+		public async Task<bool> DeleteAsync(int id)
 		{
-			var Customer = _dbContext.Customers.Find(id);
+			var Customer = await _dbContext.Customers.FindAsync(id);
 			if (Customer == null)
 				return false;
 			_dbContext.Customers.Remove(Customer);
-			_dbContext.SaveChanges();
+			await _dbContext.SaveChangesAsync();
 			return (true);
 		}
 
-		public bool Update(Customer updateCustomer)
+		public async Task<bool> UpdateAsync(Customer updateCustomer)
 		{
-			var customer = _dbContext.Customers.FirstOrDefault(p => p.Id == updateCustomer.Id);
+			var customer = await _dbContext.Customers.FirstOrDefaultAsync(p => p.Id == updateCustomer.Id);
 			if (customer == null)
 				return false;
 			customer.Limit = updateCustomer.Limit;
@@ -58,7 +60,7 @@ namespace backend.Services
 			customer.IPAddress = updateCustomer.IPAddress;
 			customer.OperatingSystem = updateCustomer.OperatingSystem;
 			customer.Timestamp = updateCustomer.Timestamp;
-			_dbContext.SaveChanges();
+			await _dbContext.SaveChangesAsync();
 			return (true);
 		}
 	}
