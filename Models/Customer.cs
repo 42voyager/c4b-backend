@@ -12,6 +12,8 @@ namespace backend.Models
 		[Required]
 		public string Installment { get; set; }
 
+		public string Reason { get; set; }
+
 		[Required(ErrorMessage = "O nome é obrigatório.")]
 		[StringLength(150, ErrorMessage = "O nome deve ser menor ou igual a 150 caracteres!")]
 		[MinLength(2, ErrorMessage = "O nome deve ser maior ou igual a 2 caracteres!")]
