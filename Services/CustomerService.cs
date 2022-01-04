@@ -51,6 +51,7 @@ namespace backend.Services
 				return false;
 			customer.Limit = updateCustomer.Limit;
 			customer.Installment = updateCustomer.Installment;
+			customer.Reason = updateCustomer.Reason;
 			customer.Name = updateCustomer.Name;
 			customer.Email = updateCustomer.Email;
 			customer.Cellphone = updateCustomer.Cellphone;
