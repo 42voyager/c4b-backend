@@ -104,7 +104,7 @@ namespace backend.Controllers
 			var email = new Email();
 			
 			// We create the path of json file that will be attached to the email
-			await _emailService.PrepareCustomerJsonAsync(feedback, attachmentPath);
+			await _emailService.PrepareJsonAsync(feedback, attachmentPath);
 			email.AttachmentPath = attachmentPath;
 			email.Subject = $"Novo feedback no site C4B: {feedback.Name}";
 			email.Body = string.Format(
