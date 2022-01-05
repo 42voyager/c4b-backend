@@ -11,11 +11,13 @@ namespace backend.Data
 
 		public DbSet<Customer> Customers { get; set; }
 		public DbSet<Feedback> Feedback { get; set; }
+		public DbSet<BankInfo> BankInfo { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.Entity<Customer>().ToTable("Customer");
 			modelBuilder.Entity<Feedback>().ToTable("Feedback");
+			modelBuilder.Entity<BankInfo>().ToTable("BankInfo");
 		}
 	}
 }

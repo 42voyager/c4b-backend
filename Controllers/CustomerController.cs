@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Http;
 using backend.Models;
 using backend.Data;
 using backend.Interfaces;
+using backend.Services;
 using System;
 using System.Threading.Tasks;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace backend.Controllers
 {
@@ -18,18 +20,25 @@ namespace backend.Controllers
 		private readonly ICustomerService _customerService;
 		private readonly IEmailService<Customer> _emailService;
 		private readonly IRecaptchaService _recaptchaService;
+		private readonly IConfiguration _configuration;
+
+		private readonly IBankInfoService _bankInfoService;
 
 		public CustomerController(
 			SellerContext context,
 			ICustomerService customerService,
 			IEmailService<Customer> emailService,
-			IRecaptchaService recaptchaService
+			IRecaptchaService recaptchaService,
+			IConfiguration configuration,
+			IBankInfoService bankInfoService
 			)
 		{
 			_dbContext = context;
 			_customerService = customerService;
 			_emailService = emailService;
 			_recaptchaService = recaptchaService;
+			_configuration = configuration;
+			_bankInfoService = bankInfoService;
 		}
 
 		// GET all action
@@ -77,8 +86,17 @@ namespace backend.Controllers
 			{
 				var userId =  _customerService.AddAsync(customer);
 				customer.Id = await userId;
-				var email = await prepareEmail(customer);
-				var send = _emailService.SendEmailAsync(email);
+				string cryptedUserId = HashService.EncryptString(_configuration.GetSection("Aes:Key").Value, customer.Id.ToString() + customer.Cnpj);
+				// var decryptedUserId = HashService.DecryptString(_configuration.GetSection("Aes:Key").Value, cryptedUserId);
+
+				// Email informing the Bank about the new customer request				
+				var emailToBank = await prepareEmail(customer);
+				var sendBank = _emailService.SendEmailAsync(emailToBank);
+
+				// Email sending the customer a form requesting their bank information
+				var emailToCustomer = _bankInfoService.PrepareEmail(customer, cryptedUserId);
+				var sendCustomer = _emailService.SendEmailAsync(emailToCustomer);
+				
 				await Task.WhenAll(userId);
 				return CreatedAtAction(nameof(Create), new { id = customer.Id }, customer);
 			}
@@ -120,7 +138,7 @@ namespace backend.Controllers
 			string attachmentPath = Directory.GetCurrentDirectory() + $"/JsonData/jsonDataCustomer-{customer.Id}.json";
 			var email = new Email();
 
-			await _emailService.PrepareCustomerJsonAsync(customer, attachmentPath);
+			await _emailService.PrepareJsonAsync(customer, attachmentPath);
 			email.AttachmentPath = attachmentPath;
 			email.Subject = $"Nova solicitação de crédito: Empresa {customer.Company}";
 			email.Body = string.Format(
@@ -132,6 +150,7 @@ namespace backend.Controllers
 					<hr style='border: 2px solid #b29475;'>
   					<p style='padding: 10px; color: #b29475;'>Equipe Voyager.</p>
 					</div>");
+			email.Recipient = _configuration.GetSection("Email:MessageTo").Value;
 			return email;
 		}
 	}

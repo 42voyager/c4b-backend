@@ -24,11 +24,12 @@ namespace backend.Services
 			var message = new MimeMessage();
 			message.From.Add(new MailboxAddress("Voyaguer", _configuration.GetSection("Email:MessageFrom").Value));
 			// For now, We sent the email only to the Administrator. Later we plan to send a confirmation email to the customer
-			message.To.Add(new MailboxAddress("Banco ABC Admin", _configuration.GetSection("Email:MessageTo").Value));
+			message.To.Add(new MailboxAddress("Banco ABC Admin", email.Recipient));
 			message.Subject = email.Subject;
 			var	builder = new BodyBuilder();
 			builder.HtmlBody = email.Body;
-			await builder.Attachments.AddAsync(email.AttachmentPath);
+			if (email.AttachmentPath != null)
+				await builder.Attachments.AddAsync(email.AttachmentPath);
 			message.Body = builder.ToMessageBody();
 
 			using (var client = new SmtpClient(new ProtocolLogger ("smtp.log")))
@@ -44,9 +45,9 @@ namespace backend.Services
 				File.Delete(email.AttachmentPath);
 		}
 
-		public async Task PrepareCustomerJsonAsync(T newUser, string file) 
+		public async Task PrepareJsonAsync(T entity, string file) 
 		{
-			var responseData = newUser;
+			var responseData = entity;
 			var path = Directory.GetCurrentDirectory() + $"/JsonData";
 
 			//cria a pasta JsonData caso não exista

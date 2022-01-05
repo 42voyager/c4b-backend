@@ -11,7 +11,7 @@ namespace backend.Interfaces
 
 		//BodyBuilder GenerateBuilder(T newUser, string attachmentPath, int Id, string Company);
 
-		Task PrepareCustomerJsonAsync(T newUser, string file);
+		Task PrepareJsonAsync(T newUser, string file);
 
 	}
 }

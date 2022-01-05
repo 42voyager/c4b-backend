@@ -8,5 +8,7 @@ namespace backend.Models
 		public string Subject { get; set; }
 
 		public string AttachmentPath { get; set; }
+
+		public string Recipient {get; set; }
 	}
 }
