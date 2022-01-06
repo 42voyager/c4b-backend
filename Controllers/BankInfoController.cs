@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.IO;
-using backend.Services;
 using backend.Models;
 using backend.Interfaces;
 using backend.Data;
@@ -71,7 +69,7 @@ namespace backend.Controllers
 		public async Task<IActionResult> Create(BankInfoView bankInfo)
 		{
 			bool isHuman = await _recaptchaService.ValidateRecaptchaScore(bankInfo.RecaptchaToken);
-			
+
 			if (isHuman == true)
 			{
 				var bankInfoId = _bankInfoService.AddAsync(bankInfo);
