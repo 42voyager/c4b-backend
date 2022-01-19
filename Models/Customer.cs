@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using backend.Attributes;
 
 namespace backend.Models
 {
@@ -30,7 +31,8 @@ namespace backend.Models
 
 		[Required(ErrorMessage = "O cnpj é obrigatório.")]
 		[RegularExpression("^\\d{2}\\.\\d{3}\\.\\d{3}\\/\\d{4}\\-\\d{2}$",
-		ErrorMessage = "O Cnpj deve seguir o formato: XX.XXX.XXX/XXXX-XX")]
+		ErrorMessage = "O CNPJ deve seguir o formato: XX.XXX.XXX/XXXX-XX")]
+		[CustomCPF(ErrorMessage = "O CNPJ não é válido.")]
 		public string Cnpj { get; set; }
 
 		[Required(ErrorMessage = "O nome da empresa obrigatório.")]
