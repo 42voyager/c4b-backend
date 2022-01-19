@@ -8,12 +8,11 @@ WORKDIR /source/deploy
 RUN dotnet restore
 
 # copy everything else and build app
-COPY ./. ./deploy/
-WORKDIR /source/deploy
-RUN dotnet publish -c Release -o /App --no-restore
+COPY ./. .
+RUN dotnet publish -c Release -o /api --no-restore
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /App
-COPY --from=build /App ./
+COPY --from=build /api .
 ENTRYPOINT ["dotnet", "backend.dll"]
