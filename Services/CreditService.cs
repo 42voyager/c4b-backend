@@ -23,7 +23,7 @@ namespace backend.Services
 			if (input < range) return range;
 
 			double inputAsDecimal = input / range;
-			double inputAsDecimalRounded = Math.Round(inputAsDecimal);
+			double inputAsDecimalRounded = Math.Ceiling(inputAsDecimal);
 			double inputToNearestRange = inputAsDecimalRounded * range;
 			return inputToNearestRange;
 		}
