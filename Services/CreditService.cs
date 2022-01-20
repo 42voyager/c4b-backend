@@ -1,9 +1,5 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System;
 using backend.Interfaces;
-using backend.Models;
-using backend.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
 {
@@ -12,9 +8,24 @@ namespace backend.Services
 		public double CalculateIncome(int Limit, int Installment)
 		{
 			double perc = 0.2;
-      		double interest = 0.05;
+			double interest = 0.05;
 			double Income = ((Limit + Limit * interest) / Installment) * (1 / perc);
-			return(Income);
+
+			if (Income < 20000) return AproximateToRange(Income, 500);
+			if (Income < 50000) return AproximateToRange(Income, 1000);
+			if (Income < 100000) return AproximateToRange(Income, 5000);
+			if (Income < 500000) return AproximateToRange(Income, 10000);
+			return AproximateToRange(Income, 50000);
+		}
+
+		private double AproximateToRange(double input, double range)
+		{
+			if (input < range) return range;
+
+			double inputAsDecimal = input / range;
+			double inputAsDecimalRounded = Math.Round(inputAsDecimal);
+			double inputToNearestRange = inputAsDecimalRounded * range;
+			return inputToNearestRange;
 		}
 	}
 }
