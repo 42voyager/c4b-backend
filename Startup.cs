@@ -37,6 +37,8 @@ namespace backend
             services.AddScoped<IRecaptchaService, RecaptchaService>();
             services.AddScoped<IBankInfoService, BankInfoService>();
 			services.AddScoped<ICreditService, CreditService>();
+			services.AddScoped<IContractService, ContractService>();
+			services.AddScoped<ICreatePdfService, CreatePdfService>();
 
             services.AddHttpClient<IRecaptchaService,RecaptchaService>();
 

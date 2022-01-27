@@ -1,10 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models
 {
 	public class BankInfo
 	{
-		public int Id { get; set; }
+		[Key]
+		[ForeignKey("Customer")]
+		public int CustomerID { get; set; }
 
 		[Required(ErrorMessage = "O nome do banco é obrigatório.")]
 		public string BankName { get; set; }
@@ -14,7 +17,5 @@ namespace backend.Models
 
 		[Required(ErrorMessage = "A conta é obrigatória.")]
 		public string CheckingAccount { get; set; }
-
-		public string hash { get; set; }
 	}
 }

@@ -73,11 +73,11 @@ namespace backend.Controllers
 			if (isHuman == true)
 			{
 				var bankInfoId = _bankInfoService.AddAsync(bankInfo);
-				bankInfo.Id = await bankInfoId;
+				bankInfo.CustomerID = await bankInfoId;
 				// var email = await PrepareEmailbankInfo(bankInfo);
 				// var send = _emailService.SendEmailAsync(email);
 				await Task.WhenAll(bankInfoId);
-				return CreatedAtAction(nameof(Create), new { id = bankInfo.Id }, bankInfo);
+				return CreatedAtAction(nameof(Create), new { id = bankInfo.CustomerID }, bankInfo);
 			}
 			else
 				return new StatusCodeResult(429);
