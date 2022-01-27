@@ -19,7 +19,7 @@ namespace backend.Services
 			_customerService = customerService;
 			_bankInfoService = bankInfoService;
 		}
-        public async Task<FileStreamResult> CreatePdf(int customerID)
+        public async Task<string> CreatePdf(int customerID)
         {
 			var customer = await _customerService.GetAsync(customerID);
 			var	bankinfo = await _bankInfoService.GetAsync(customerID);
@@ -70,19 +70,14 @@ namespace backend.Services
             graphics.DrawString(contractTitle, font, PdfBrushes.Black, new PointF(250, 0));
 			graphics.DrawString(contractText, font, PdfBrushes.Black, new Point(0, 50), format);
 
-            //Saving the PDF to the MemoryStream
+            ///Saving the PDF to the MemoryStream
             MemoryStream stream = new MemoryStream();
 
             document.Save(stream);
-
-            //Set the position as '0'.
             stream.Position = 0;
-
-            //Download the PDF document in the browser
-            FileStreamResult fileStreamResult = new FileStreamResult(stream, "application/pdf");
-
-            fileStreamResult.FileDownloadName = "contract.pdf";
-            return fileStreamResult;
+			document.Close(true);
+            byte[] bytes = stream.ToArray();
+			return "data:application/pdf;base64," + Convert.ToBase64String(bytes);
         }
     }
 }

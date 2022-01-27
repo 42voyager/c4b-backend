@@ -6,6 +6,6 @@ namespace backend.Interfaces
 {
 	public interface ICreatePdfService
 	{
-		Task<FileStreamResult> CreatePdf(int customerID);
+		Task<string> CreatePdf(int customerID);
 	}
 }

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using backend.Models;
 using backend.Interfaces;
 using backend.Data;
-using backend.Services;
 
 namespace backend.Controllers
 {
@@ -63,7 +62,7 @@ namespace backend.Controllers
 		[HttpPost]
 		[ProducesResponseType(typeof(Contract), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public async Task<FileStreamResult> CreateAsync(Contract newContract)
+		public async Task<string> CreateAsync(Contract newContract)
 		{
 			await _contractService.AddAsync(newContract);
 
