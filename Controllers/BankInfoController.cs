@@ -15,19 +15,22 @@ namespace backend.Controllers
 		private readonly SellerContext _dbContext;
 		private readonly IBankInfoService _bankInfoService;
 		private readonly IRecaptchaService _recaptchaService;
+		private readonly ICreatePdfService _createPdfService;
 
 		// private readonly IEmailService<BankInfo> _emailService;
 
 		public BankInfoController(
 			SellerContext context,
 			IBankInfoService bankInfoService,
-			IRecaptchaService recaptchaService
+			IRecaptchaService recaptchaService,
+			ICreatePdfService createPdfService
 			// IEmailService<BankInfo> emailService
 		)
 		{
 			_dbContext = context;
 			_bankInfoService = bankInfoService;
 			_recaptchaService = recaptchaService;
+			_createPdfService = createPdfService;
 			// _emailService = emailService;
 		}
 
@@ -77,6 +80,8 @@ namespace backend.Controllers
 				// var email = await PrepareEmailbankInfo(bankInfo);
 				// var send = _emailService.SendEmailAsync(email);
 				await Task.WhenAll(bankInfoId);
+
+				await _createPdfService.CreatePdf(bankInfo.CustomerID);
 				return CreatedAtAction(nameof(Create), new { id = bankInfo.CustomerID }, bankInfo);
 			}
 			else

@@ -1,11 +1,12 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using backend.Interfaces;
+using backend.Models;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
 using Syncfusion.Drawing;
+using Syncfusion.Pdf.Security;
 
 namespace backend.Services
 {
@@ -13,13 +14,20 @@ namespace backend.Services
     {
 		private readonly ICustomerService _customerService;
 		private readonly IBankInfoService _bankInfoService;
+		private readonly IContractService _contractService;
 
-		public CreatePdfService(ICustomerService customerService, IBankInfoService bankInfoService)
+		public CreatePdfService(ICustomerService customerService, IBankInfoService bankInfoService, IContractService contractService)
 		{
 			_customerService = customerService;
 			_bankInfoService = bankInfoService;
+			_contractService = contractService;
 		}
-        public async Task<string> CreatePdf(int customerID)
+		/// <summary>
+		/// Cria um PDF com a informação completa do usuário: crédito, parcelas,
+		/// dados bancários, CNPJ e contato
+		/// </summary>
+		/// <param name="customerID">ID do usuário do banco de dados</param>
+		public async Task CreatePdf(int customerID)
         {
 			var customer = await _customerService.GetAsync(customerID);
 			var	bankinfo = await _bankInfoService.GetAsync(customerID);
@@ -37,6 +45,17 @@ namespace backend.Services
             PdfFont font = new PdfStandardFont(PdfFontFamily.Helvetica, 14);
 
 			PdfStringFormat format = new PdfStringFormat();
+
+			///Document security.
+			PdfSecurity security = document.Security;
+			///Specifies key size and encryption algorithm.
+			security.KeySize = PdfEncryptionKeySize.Key128Bit;
+			security.Algorithm = PdfEncryptionAlgorithm.RC4;
+			security.OwnerPassword = "voyager";
+
+			//It allows printing and accessibility copy content
+			security.Permissions = PdfPermissionsFlags.Print | PdfPermissionsFlags.AccessibilityCopyContent;
+			security.UserPassword = customer.Cnpj;
 
 			string contractTitle = string.Format("Contrato");
 			///String for Contract PDF
@@ -77,7 +96,14 @@ namespace backend.Services
             stream.Position = 0;
 			document.Close(true);
             byte[] bytes = stream.ToArray();
-			return "data:application/pdf;base64," + Convert.ToBase64String(bytes);
+			var pdfData = "data:application/pdf;base64," + Convert.ToBase64String(bytes);
+			await CreateContract(customerID, pdfData);
         }
+		public async Task CreateContract(int customerID, string pdfData) {
+			var contract = new Contract();
+			contract.CustomerID = customerID;
+			contract.ContractPdf = pdfData;
+			await _contractService.AddAsync(contract);
+		}
     }
 }

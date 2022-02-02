@@ -8,6 +8,7 @@ namespace backend.Models
 		[Key]
 		[ForeignKey("Customer")]
 		public int CustomerID { get; set; }
+		public string ContractPdf { get; set; }
         public System.DateTime SignDate { get; set; }
 		[Required]
 		[Range(typeof(bool), "true", "true", ErrorMessage = "Precisa aceitar os termos e condições")]

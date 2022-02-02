@@ -17,5 +17,7 @@ namespace backend.Models
 
 		[Required(ErrorMessage = "A conta é obrigatória.")]
 		public string CheckingAccount { get; set; }
+
+		public string hash {get; set; }
 	}
 }

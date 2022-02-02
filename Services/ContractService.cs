@@ -3,6 +3,8 @@ using backend.Interfaces;
 using backend.Models;
 using backend.Data;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 
 namespace backend.Services
 {
@@ -31,6 +33,19 @@ namespace backend.Services
 			var result = await _dbContext.Contracts.AddAsync(newContract);
 			await _dbContext.SaveChangesAsync();
 			return result.Entity.CustomerID;
+		}
+		public async Task<bool> UpdateAsync(Contract updateContract)
+		{
+			var contract = await _dbContext.Contracts.FirstOrDefaultAsync(p => p.CustomerID == updateContract.CustomerID);
+			if (contract == null)
+				return false;
+			DateTime currentDate = DateTime.Now;
+			contract.AcceptTerms = updateContract.AcceptTerms;
+			contract.AuthorizeSCR = updateContract.AuthorizeSCR;
+			contract.ExistsPEP = updateContract.ExistsPEP;
+			contract.SignDate = currentDate;
+			await _dbContext.SaveChangesAsync();
+			return (true);
 		}
 		public async Task<bool> DeleteAsync(int id)
 		{

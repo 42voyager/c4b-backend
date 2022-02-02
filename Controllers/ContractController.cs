@@ -52,21 +52,25 @@ namespace backend.Controllers
 			return contract;
 		}
 
-		// Create contracto action
+		// Update contracto action
 		/// <summary>
-		/// Cria um contrato linkado com a id do customer
+		/// Atualiza o contrato com a assinatura
 		/// </summary>
-		/// <param name="newContract"> contrato criado </param>
+		/// <param name="id"> id do usuário </param>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
 		[HttpPost]
-		[ProducesResponseType(typeof(Contract), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public async Task<string> CreateAsync(Contract newContract)
+		public async Task<IActionResult> Update(Contract contract)
 		{
-			await _contractService.AddAsync(newContract);
-
-			return await _createPdfService.CreatePdf(newContract.CustomerID);
+			var existingContract = await _contractService.GetAsync(contract.CustomerID);
+			if (existingContract == null)
+				return NotFound();
+			await _contractService.UpdateAsync(contract);
+			return Ok();
 		}
 
 		// Delete contracto action
