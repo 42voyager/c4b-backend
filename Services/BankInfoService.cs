@@ -19,7 +19,7 @@ namespace backend.Services
 		{
 			var result = await _dbContext.BankInfo.AddAsync(bankInfo);
 			await _dbContext.SaveChangesAsync();
-			return result.Entity.Id;
+			return result.Entity.CustomerID;
 		}
 
 		public async Task<bool> DeleteAsync(int id)
@@ -39,7 +39,7 @@ namespace backend.Services
 
 		public async Task<BankInfo> GetAsync(int id)
 		{
-			return await _dbContext.BankInfo.FirstOrDefaultAsync(p => p.Id == id);
+			return await _dbContext.BankInfo.FirstOrDefaultAsync(p => p.CustomerID == id);
 		}
 
 		public Email PrepareEmail(Customer customer, string hash)
@@ -49,7 +49,7 @@ namespace backend.Services
 			email.Subject = $"Dados Bancários Para Contratar o Empréstimo";
 			email.Body = string.Format(
 					@$"<div style='max-width: 100%; width: calc(100% - 60px); padding: 30px 30px; text-align: center;'>
-					<h1 style='font-size= 14px; '>Dados Bancários <br></h1> 
+					<h1 style='font-size= 14px; '>Dados Bancários <br></h1>
 					<p>No link, você deve preencher seus dados bancários para fazer o empréstimo </p>
 					<a href='www.c4b.fun/bankInfoForm/{hash}'> www.c4b.fun/bankInfoForm/{hash} </a>
 					<p></p><br>

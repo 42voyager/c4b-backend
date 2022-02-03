@@ -62,13 +62,15 @@ namespace backend.Controllers
 		/// <param name="id"> id do customer </param>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
-		[HttpGet("{id}")]
+		[HttpGet("{hash}")]
 		[ProducesResponseType(typeof(Customer), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public async Task<ActionResult<Customer>> GetActionResult(int id)
+		public async Task<ActionResult<Customer>> GetActionResult(string hash)
 		{
+			var id = HashService.GetIdFromHash(_configuration.GetSection("Aes:Key").Value, hash);
+			if (id == -1)
+				return NotFound();
 			var customer = await _customerService.GetAsync(id);
-
 			if (customer == null)
 				return NotFound();
 			return customer;

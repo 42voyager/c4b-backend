@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using backend.Models;
 using backend.Interfaces;
 using backend.Data;
+using backend.Services;
+using Microsoft.Extensions.Configuration;
+
 
 namespace backend.Controllers
 {
@@ -15,19 +18,25 @@ namespace backend.Controllers
 		private readonly SellerContext _dbContext;
 		private readonly IBankInfoService _bankInfoService;
 		private readonly IRecaptchaService _recaptchaService;
+		private readonly ICreatePdfService _createPdfService;
+		private readonly IConfiguration _configuration;
 
 		// private readonly IEmailService<BankInfo> _emailService;
 
 		public BankInfoController(
 			SellerContext context,
 			IBankInfoService bankInfoService,
-			IRecaptchaService recaptchaService
+			IRecaptchaService recaptchaService,
+			ICreatePdfService createPdfService,
+			IConfiguration configuration
 			// IEmailService<BankInfo> emailService
 		)
 		{
 			_dbContext = context;
 			_bankInfoService = bankInfoService;
 			_recaptchaService = recaptchaService;
+			_createPdfService = createPdfService;
+			_configuration = configuration;
 			// _emailService = emailService;
 		}
 
@@ -51,11 +60,14 @@ namespace backend.Controllers
 		/// </summary>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
-		[HttpGet("{id}")]
+		[HttpGet("{hash}")]
 		[ProducesResponseType(typeof(List<BankInfo>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public async Task<ActionResult<BankInfo>> GetActionResult(int id)
+		public async Task<ActionResult<BankInfo>> GetActionResult(string hash)
 		{
+			var id = HashService.GetIdFromHash(_configuration.GetSection("Aes:Key").Value, hash);
+			if (id == -1)
+				return NotFound();
 			var bankInfo = await _bankInfoService.GetAsync(id);
 
 			if (bankInfo == null)
@@ -72,12 +84,15 @@ namespace backend.Controllers
 
 			if (isHuman == true)
 			{
+				var customerID = HashService.GetIdFromHash(_configuration.GetSection("Aes:Key").Value, bankInfo.hash);
+				bankInfo.CustomerID = customerID;
 				var bankInfoId = _bankInfoService.AddAsync(bankInfo);
-				bankInfo.Id = await bankInfoId;
 				// var email = await PrepareEmailbankInfo(bankInfo);
 				// var send = _emailService.SendEmailAsync(email);
 				await Task.WhenAll(bankInfoId);
-				return CreatedAtAction(nameof(Create), new { id = bankInfo.Id }, bankInfo);
+
+				await _createPdfService.CreatePdf(bankInfo.CustomerID);
+				return CreatedAtAction(nameof(Create), new { id = bankInfo.CustomerID }, bankInfo);
 			}
 			else
 				return new StatusCodeResult(429);
