@@ -1,12 +1,12 @@
 using backend.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace backend.Interfaces
 {
 	public interface IContractService
 	{
-		Task<BankInfo> GetBankInfoAsync(int id);
-		Task<Customer> GetCustomerInfoAsync(int id);
+		Task<List<Contract>> GetAllAsync();
 		Task<Contract> GetAsync(int id);
 		Task<int> AddAsync(Contract newContract);
 		Task<bool> UpdateAsync(Contract contract);

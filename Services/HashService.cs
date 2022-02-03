@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace backend.Services
 {
@@ -45,12 +46,31 @@ namespace backend.Services
             }  
             return (Convert.ToBase64String(array)).Replace('+', '-').Replace('/', '_'); 
         }  
-  
+
+        /// <summary>
+        /// Função utilizada para desincriptar os hash.
+        /// Em casos de receber uma string que não seja base 64 haveria um erro.
+        /// Para evitar temos um try catch.
+        /// </summary>
+        /// <param name="key"> Chave para desincriptar o hash. </param>
+        /// <param name="cipherText"> Hash que deseja desencriptar. </param>
+        /// <returns> Em caso de sucesso o param cipherText desencriptado. </returns>
+        /// <returns> Em caso de falha retorna null. </returns>
         public static string DecryptString(string key, string cipherText)  
-        {  
-            byte[] iv = new byte[16];  
-            byte[] buffer = Convert.FromBase64String(cipherText.Replace('-', '+').Replace('_', '/'));  
-  
+        {
+            // if (IsBase64String(cipherText) is false)
+            //     return null;
+            byte[] iv = new byte[16];
+            byte[] buffer;
+            try
+            {
+                buffer = Convert.FromBase64String(cipherText.Replace('-', '+').Replace('_', '/'));  
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Ocorreu um erro ao tentar desincriptar o hash {cipherText}:\n\n{exception}\n");
+                return null;
+            }
             using (Aes aes = Aes.Create())  
             {  
                 aes.Key = Encoding.UTF8.GetBytes(key);  
@@ -69,5 +89,24 @@ namespace backend.Services
                 }  
             }  
         }
+
+        /// <sumary> 
+        /// Esta função desencripta o hash, separa o id do cnpj
+        /// e por fim retorna o id do hash.
+        /// </sumary>
+        /// <param name="key"> Chave para desencriptar o hash </param>
+        /// <param name="hash"> O hash que vc do qual você precisa pegar o id </param>
+        /// <returns> Com sucesso retorna o id escondido no hash. </return>
+        /// <returns> Em caso de falha retorna -1 </return>
+        public static int GetIdFromHash(string key, string hash){
+            if (hash == null)
+                return -1;
+            string decriptedHash = HashService.DecryptString(key, hash);
+            if (decriptedHash == null)
+                return -1;
+			var id = int.Parse(decriptedHash.Substring(0, decriptedHash.Length - 18));
+            return id;
+        }
+
 	}
 }

@@ -16,13 +16,10 @@ namespace backend.Services
 		{
 			_dbContext = context;
 		}
-		public async Task<Customer> GetCustomerInfoAsync(int id)
+
+		public async Task<List<Contract>> GetAllAsync()
 		{
-			return await _dbContext.Customers.FirstOrDefaultAsync(p => p.Id == id);
-		}
-		public async Task<BankInfo> GetBankInfoAsync(int id)
-		{
-			return await _dbContext.BankInfo.FirstOrDefaultAsync(p => p.CustomerID == id);
+			return await _dbContext.Contracts.ToListAsync();
 		}
 		public async Task<Contract> GetAsync(int id)
 		{
