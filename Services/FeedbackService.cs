@@ -33,7 +33,7 @@ namespace backend.Services
 			await _dbContext.SaveChangesAsync();
 			return result.Entity.Id;
 		}
-
+		
 		public async Task<bool> DeleteAsync(int id)
 		{
 			var feedback = await _dbContext.Feedback.FindAsync(id);

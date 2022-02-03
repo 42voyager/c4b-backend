@@ -34,6 +34,7 @@ namespace backend
             services.AddScoped<IEmailService<Customer>, EmailService<Customer>>();
             services.AddScoped<IEmailService<Feedback>, EmailService<Feedback>>();
             services.AddScoped<IFeedbackService, FeedbackService>();
+            services.AddScoped<IFeedbackStarService, FeedbackStarService>();
             services.AddScoped<IRecaptchaService, RecaptchaService>();
             services.AddScoped<IBankInfoService, BankInfoService>();
 			services.AddScoped<ICreditService, CreditService>();

@@ -13,6 +13,7 @@ namespace backend.Data
 		public DbSet<Feedback> Feedback { get; set; }
 		public DbSet<BankInfo> BankInfo { get; set; }
 		public DbSet<Contract> Contracts { get; set; }
+		public DbSet<FeedbackStar> FeedbackStar { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -20,6 +21,7 @@ namespace backend.Data
 			modelBuilder.Entity<Feedback>().ToTable("Feedback");
 			modelBuilder.Entity<BankInfo>().ToTable("BankInfo");
 			modelBuilder.Entity<Contract>().ToTable("Contract");
+			modelBuilder.Entity<FeedbackStar>().ToTable("FeedbackStar");
 		}
 	}
 }

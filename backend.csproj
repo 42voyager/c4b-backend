@@ -13,7 +13,10 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SQLite" Version="5.0.0-*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0-*" />
+    <PackageReference Include="Microsoft.Playwright" Version="1.18.0" />
+    <PackageReference Include="Microsoft.Playwright.NUnit" Version="1.18.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     <PackageReference Include="Syncfusion.Pdf.Net.Core" Version="19.4.0.47" />
 

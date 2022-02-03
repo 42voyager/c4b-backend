@@ -16,7 +16,7 @@ namespace backend.Models
 		public string Email { get; set; }
 
 		[Required(ErrorMessage = "A mensagem é obrigatória!")]
-		[MinLength(10, ErrorMessage = "A mensagem deve ser maior ou igual a 10 caracteres!")]
+		[MinLength(5, ErrorMessage = "A mensagem deve ser maior ou igual a 5 caracteres!")]
 		public string Message { get; set; }
 	}
 }
