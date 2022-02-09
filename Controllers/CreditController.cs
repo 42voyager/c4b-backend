@@ -28,12 +28,12 @@ namespace backend.Controllers
 		/// </summary>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
-		[HttpGet]
+		[HttpPost]
 		[ProducesResponseType(typeof(double), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public ActionResult<double> Get(int Limit, int Installment)
+		public ActionResult<double> Get(Credit credit)
 		{
-			var Income = _creditService.CalculateIncome(Limit, Installment);
+			var Income = _creditService.CalculateIncome(credit);
 			return (Income);
 		}
 	}
