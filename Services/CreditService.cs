@@ -1,15 +1,16 @@
 using System;
 using backend.Interfaces;
+using backend.Models;
 
 namespace backend.Services
 {
 	public class CreditService : ICreditService
 	{
-		public double CalculateIncome(int Limit, int Installment)
+		public double CalculateIncome(Credit credit)
 		{
 			double perc = 0.2;
 			double interest = 0.05;
-			double Income = ((Limit + Limit * interest) / Installment) * (1 / perc);
+			double Income = ((credit.Limit + credit.Limit * interest) / credit.Installment) * (1 / perc);
 
 			if (Income < 20000) return AproximateToRange(Income, 500);
 			if (Income < 50000) return AproximateToRange(Income, 1000);

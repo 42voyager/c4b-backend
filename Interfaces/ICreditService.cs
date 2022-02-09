@@ -1,7 +1,8 @@
+using backend.Models;
 namespace backend.Interfaces
 {
 	public interface ICreditService
 	{
-		double CalculateIncome(int Limit, int Installment);
+		double CalculateIncome(Credit credit);
 	}
 }
