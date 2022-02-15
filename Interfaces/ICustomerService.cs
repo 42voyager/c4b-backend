@@ -15,5 +15,7 @@ namespace backend.Interfaces
 		Task<bool> DeleteAsync(int id);
 
 		Task<bool> UpdateAsync(Customer updateCustomer);
+
+		Task<bool> UpdateStatusAsync(int id, string status);
 	}
 }

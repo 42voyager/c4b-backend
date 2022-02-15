@@ -29,6 +29,7 @@ namespace backend.Services
 
 		public async Task<int> AddAsync(Customer newCustomer)
 		{
+			newCustomer.Status = Status.Credit;
 			var result = await _dbContext.Customers.AddAsync(newCustomer);
 			await _dbContext.SaveChangesAsync();
 			return result.Entity.Id;
@@ -61,6 +62,15 @@ namespace backend.Services
 			customer.IPAddress = updateCustomer.IPAddress;
 			customer.OperatingSystem = updateCustomer.OperatingSystem;
 			customer.Timestamp = updateCustomer.Timestamp;
+			await _dbContext.SaveChangesAsync();
+			return (true);
+		}
+		public async Task<bool> UpdateStatusAsync(int id, string status)
+		{
+			var customer = await _dbContext.Customers.FirstOrDefaultAsync(p => p.Id == id);
+			if (customer == null)
+				return false;
+			customer.Status = status;
 			await _dbContext.SaveChangesAsync();
 			return (true);
 		}

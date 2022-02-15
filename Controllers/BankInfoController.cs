@@ -17,6 +17,7 @@ namespace backend.Controllers
 	{
 		private readonly SellerContext _dbContext;
 		private readonly IBankInfoService _bankInfoService;
+		private readonly ICustomerService _customerService;
 		private readonly IRecaptchaService _recaptchaService;
 		private readonly ICreatePdfService _createPdfService;
 		private readonly IConfiguration _configuration;
@@ -26,6 +27,7 @@ namespace backend.Controllers
 		public BankInfoController(
 			SellerContext context,
 			IBankInfoService bankInfoService,
+			ICustomerService customerService,
 			IRecaptchaService recaptchaService,
 			ICreatePdfService createPdfService,
 			IConfiguration configuration
@@ -34,6 +36,7 @@ namespace backend.Controllers
 		{
 			_dbContext = context;
 			_bankInfoService = bankInfoService;
+			_customerService = customerService;	
 			_recaptchaService = recaptchaService;
 			_createPdfService = createPdfService;
 			_configuration = configuration;
@@ -86,10 +89,9 @@ namespace backend.Controllers
 			{
 				var customerID = HashService.GetIdFromHash(_configuration.GetSection("Aes:Key").Value, bankInfo.hash);
 				bankInfo.CustomerID = customerID;
-				var bankInfoId = _bankInfoService.AddAsync(bankInfo);
-				// var email = await PrepareEmailbankInfo(bankInfo);
-				// var send = _emailService.SendEmailAsync(email);
-				await Task.WhenAll(bankInfoId);
+				var userId = await _bankInfoService.AddAsync(bankInfo);
+				if (await _customerService.UpdateStatusAsync(userId, Status.BankInfo) == false)
+					return NotFound();
 
 				await _createPdfService.CreatePdf(bankInfo.CustomerID);
 				return CreatedAtAction(nameof(Create), new { id = bankInfo.CustomerID }, bankInfo);
