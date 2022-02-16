@@ -37,21 +37,13 @@ namespace backend.Controllers
 		/// </summary>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
-
-
-		// /report
-		// /customers
 		[HttpGet]
-		[ProducesResponseType(typeof(List<Customer>), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(List<CustomerReport>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
-		public async Task<ActionResult<List<Customer>>> GetAll()
+		public async Task<ActionResult<List<CustomerReport>>> GetAll()
 		{
-			var Customers = await _customerService.GetAllAsync();
-			// Limpiar atributos de customer e retornar objetos CustomerReport
-			/*{
-				name, email, cnpj, credit, installment, status
-			}*/
-			return Customers;
+			var CustomersReport = await _customerService.GetAllReportAsync();
+			return CustomersReport;
 		}
 	}
 }
