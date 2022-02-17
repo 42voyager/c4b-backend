@@ -9,11 +9,14 @@ namespace backend.Interfaces
 		Task<List<Customer>> GetAllAsync();
 
 		Task<Customer> GetAsync(int id);
+		Task<List<CustomerReport>> GetAllReportAsync();
 
 		Task<int> AddAsync(Customer newCustomer);
 
 		Task<bool> DeleteAsync(int id);
 
 		Task<bool> UpdateAsync(Customer updateCustomer);
+
+		Task<bool> UpdateStatusAsync(int id, string status);
 	}
 }

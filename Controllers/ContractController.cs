@@ -16,6 +16,7 @@ namespace backend.Controllers
 	{
 		private readonly SellerContext _dbContext;
 		private readonly IContractService _contractService;
+		private readonly ICustomerService _customerService;
 		private readonly IRecaptchaService _recaptchaService;
 		private readonly ICreatePdfService _createPdfService;
 		private readonly IConfiguration _configuration;
@@ -27,7 +28,8 @@ namespace backend.Controllers
 			IContractService contractService,
 			ICreatePdfService createPdfService,
 			IRecaptchaService recaptchaService,
-			IConfiguration configuration
+			IConfiguration configuration,
+			ICustomerService customerService
 			// IEmailService<BankInfo> emailService
 		)
 		{
@@ -36,6 +38,7 @@ namespace backend.Controllers
 			_createPdfService = createPdfService;
 			_recaptchaService = recaptchaService;
 			_configuration = configuration;
+			_customerService = customerService;
 			// _emailService = emailService;
 		}
 
@@ -92,6 +95,11 @@ namespace backend.Controllers
 			var existingContract = await _contractService.GetAsync(contract.CustomerID);
 			if (existingContract == null)
 				return NotFound();
+			if (contract.AcceptTerms && contract.AuthorizeSCR && contract.ExistsPEP)
+			{
+				if (await _customerService.UpdateStatusAsync(existingContract.CustomerID, Status.Contract) == false)
+					return NotFound();
+			}
 			await _contractService.UpdateAsync(contract);
 			return Ok();
 		}
