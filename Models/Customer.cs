@@ -46,5 +46,6 @@ namespace backend.Models
 		public string IPAddress { get; set; }
 		public string OperatingSystem { get; set; }
 		public System.DateTime Timestamp { get; set; }
+		public string Status { get; set; }
 	}
 }
