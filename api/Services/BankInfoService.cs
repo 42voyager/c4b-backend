@@ -4,6 +4,8 @@ using backend.Interfaces;
 using backend.Models;
 using backend.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System;
 
 namespace backend.Services
 {
@@ -11,9 +13,12 @@ namespace backend.Services
 	{
 		private readonly SellerContext _dbContext;
 
-		public BankInfoService(SellerContext context)
+		private readonly IConfiguration _configuration;
+
+		public BankInfoService(SellerContext context, IConfiguration configuration)
 		{
 			_dbContext = context;
+			_configuration = configuration;
 		}
 		public async Task<int> AddAsync(BankInfo bankInfo)
 		{
@@ -45,17 +50,14 @@ namespace backend.Services
 		public Email PrepareEmail(Customer customer, string hash)
 		{
 			var email = new Email();
+			// The email template coming from the appsettings requires a hash value
+			string[] templateBody = _configuration.GetSection("EmailTemplates:BankInfo:Body").Get<string[]>();
 
-			email.Subject = $"Dados Bancários Para Contratar o Empréstimo";
+			email.Subject = _configuration.GetSection("EmailTemplates:BankInfo:Subject").Value;
 			email.Body = string.Format(
-					@$"<div style='max-width: 100%; width: calc(100% - 60px); padding: 30px 30px; text-align: center;'>
-					<h1 style='font-size= 14px; '>Dados Bancários <br></h1>
-					<p>No link, você deve preencher seus dados bancários para fazer o empréstimo </p>
-					<a href='www.c4b.fun/bankInfoForm/{hash}'> www.c4b.fun/bankInfoForm/{hash} </a>
-					<p></p><br>
-					<hr style='border: 2px solid #b29475;'>
-  					<p style='padding: 10px; color: #b29475;'>Equipe C4B.</p>
-					</div>");
+				String.Join(" ", templateBody),
+				hash
+			);
 			email.Recipient = customer.Email;
 			return email;
 		}

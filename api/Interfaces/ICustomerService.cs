@@ -18,5 +18,6 @@ namespace backend.Interfaces
 		Task<bool> UpdateAsync(Customer updateCustomer);
 
 		Task<bool> UpdateStatusAsync(int id, string status);
+		Task<Email> PrepareEmail(Customer customer);
 	}
 }

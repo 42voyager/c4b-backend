@@ -6,15 +6,22 @@ using backend.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace backend.Services
 {
 	public class CustomerService : ICustomerService
 	{
 		private readonly SellerContext _dbContext;
-		public CustomerService(SellerContext context)
+		private readonly IConfiguration _configuration;
+		private readonly IEmailService<Customer> _emailService;
+		public CustomerService(SellerContext context, IConfiguration configuration, IEmailService<Customer> emailService)
 		{
 			_dbContext = context;
+			_configuration = configuration;
+			_emailService = emailService;
 		}
 
 		public async Task<List<Customer>> GetAllAsync()
@@ -89,6 +96,28 @@ namespace backend.Services
 			customer.Status = status;
 			await _dbContext.SaveChangesAsync();
 			return (true);
+		}
+		public async Task<Email> PrepareEmail(Customer customer)
+		{
+			DateTime localDate = DateTime.Now;
+			string attachmentPath = Directory.GetCurrentDirectory() + $"/JsonData/jsonDataCustomer-{customer.Id}.json";
+			var email = new Email();
+
+			await _emailService.PrepareJsonAsync(customer, attachmentPath);
+			email.AttachmentPath = attachmentPath;
+
+			string[] templateBody = _configuration.GetSection("EmailTemplates:CustomerRequest:Body").Get<string[]>();
+			email.Subject = string.Format(
+				_configuration.GetSection("EmailTemplates:CustomerRequest:Subject").Value,
+				customer.Company
+			);
+			email.Body = string.Format(
+				String.Join(" ", templateBody),
+				localDate.ToLongDateString(),
+				customer.Company
+			);
+			email.Recipient = _configuration.GetSection("Email:MessageTo").Value;
+			return email;
 		}
 	}
 }

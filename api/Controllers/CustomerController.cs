@@ -5,9 +5,7 @@ using backend.Models;
 using backend.Data;
 using backend.Interfaces;
 using backend.Services;
-using System;
 using System.Threading.Tasks;
-using System.IO;
 using Microsoft.Extensions.Configuration;
 
 namespace backend.Controllers
@@ -92,7 +90,7 @@ namespace backend.Controllers
 				// var decryptedUserId = HashService.DecryptString(_configuration.GetSection("Aes:Key").Value, cryptedUserId);
 
 				// Email informing the Bank about the new customer request				
-				var emailToBank = await prepareEmail(customer);
+				var emailToBank = await _customerService.PrepareEmail(customer);
 				var sendBank = _emailService.SendEmailAsync(emailToBank);
 
 				// Email sending the customer a form requesting their bank information
@@ -132,28 +130,6 @@ namespace backend.Controllers
 			if (customer == false)
 				return NotFound();
 			return Ok();
-		}
-
-		private async Task<Email> prepareEmail(Customer customer)
-		{
-			DateTime localDate = DateTime.Now;
-			string attachmentPath = Directory.GetCurrentDirectory() + $"/JsonData/jsonDataCustomer-{customer.Id}.json";
-			var email = new Email();
-
-			await _emailService.PrepareJsonAsync(customer, attachmentPath);
-			email.AttachmentPath = attachmentPath;
-			email.Subject = $"Nova solicitação de crédito: Empresa {customer.Company}";
-			email.Body = string.Format(
-					@$"<div style='max-width: 100%; width: calc(100% - 60px); padding: 30px 30px; text-align: center;'>
-					<h1 style='font-size= 14px; '>Nova Solicitação <br>{localDate.ToString()}</h1> 
-					<p>Nova solicitação de crédito, feita pela empresa {customer.Company}</p>
-					<p>Todas as informações disponiveis estão guardadas no json anexado!</p>
-					<p></p><br>
-					<hr style='border: 2px solid #b29475;'>
-  					<p style='padding: 10px; color: #b29475;'>Equipe Voyager.</p>
-					</div>");
-			email.Recipient = _configuration.GetSection("Email:MessageTo").Value;
-			return email;
 		}
 	}
 }
