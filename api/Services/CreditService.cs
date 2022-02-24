@@ -4,8 +4,14 @@ using backend.Models;
 
 namespace backend.Services
 {
+
+	/// <summary>
+	/// Class <c>CreditService</c> implementa <c>ICreditService</c> interface.
+	/// </summary>
 	public class CreditService : ICreditService
 	{
+
+		/// <inheritdoc />
 		public double CalculateIncome(Credit credit)
 		{
 			double perc = 0.2;
@@ -19,7 +25,8 @@ namespace backend.Services
 			return AproximateToRange(Income, 50000);
 		}
 
-		private double AproximateToRange(double input, double range)
+		/// <inheritdoc />
+		public double AproximateToRange(double input, double range)
 		{
 			if (input < range) return range;
 

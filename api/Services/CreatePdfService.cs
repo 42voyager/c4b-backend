@@ -10,23 +10,31 @@ using Syncfusion.Pdf.Security;
 
 namespace backend.Services
 {
+
+	/// <summary>
+	/// Class <c>CreatePdfService</c> implementa <c>ICreatePdfService</c> interface.
+	/// </summary>
     public class CreatePdfService : ICreatePdfService
     {
 		private readonly ICustomerService _customerService;
 		private readonly IBankInfoService _bankInfoService;
 		private readonly IContractService _contractService;
 
+		/// <summary>
+		/// Este construtor inicializa o <paramref name="customerService"/>, <paramref name="banInfoService"/> e
+		/// <paramref name="contractService"/> que são os serviços a serem utilizados.
+		/// </summary>
+		/// <param name="customerService">Instância do ICustomerService</param>
+		/// <param name="bankInfoService">Instância do IBanInfoService</param>
+		/// <param name="contractService">Instância do IContractService</param>
 		public CreatePdfService(ICustomerService customerService, IBankInfoService bankInfoService, IContractService contractService)
 		{
 			_customerService = customerService;
 			_bankInfoService = bankInfoService;
 			_contractService = contractService;
 		}
-		/// <summary>
-		/// Cria um PDF com a informação completa do usuário: crédito, parcelas,
-		/// dados bancários, CNPJ e contato
-		/// </summary>
-		/// <param name="customerID">ID do usuário do banco de dados</param>
+
+		/// <inheritdoc />
 		public async Task CreatePdf(int customerID)
         {
 			var customer = await _customerService.GetAsync(customerID);
@@ -99,6 +107,8 @@ namespace backend.Services
 			var pdfData = "data:application/pdf;base64," + Convert.ToBase64String(bytes);
 			await CreateContract(customerID, pdfData);
         }
+
+		/// <inheritdoc />
 		public async Task CreateContract(int customerID, string pdfData) {
 			var contract = new Contract();
 			contract.CustomerID = customerID;

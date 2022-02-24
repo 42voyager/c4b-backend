@@ -11,13 +11,26 @@ using System.Text.Json.Serialization;
 
 namespace backend.Services
 {
+
+	/// <summary>
+	/// Class <c>EmailService</c> implementa <c>IEmailService</c> interface.
+	/// Esta classe é genérica, assim você pode criar com qualquer tipo.
+	/// </summary>
+	/// <typeparam name="T">O tipo armazenado pela classe.</typeparam>
 	public class EmailService<T> : IEmailService<T> where T : class
 	{
 		private readonly IConfiguration _configuration;
+
+		/// <summary>
+		/// Este construtor inicializa as <paramref name="configuration"/> do arquivo appSettings.
+		/// </summary>
+		/// <param name="configuration">Instância do IConfiguration.</param>
 		public EmailService(IConfiguration configuration)
 		{
 			_configuration = configuration;
 		}
+
+		/// <inheritdoc />
 
 		public async Task SendEmailAsync(Email email)
 		{
@@ -45,12 +58,12 @@ namespace backend.Services
 				File.Delete(email.AttachmentPath);
 		}
 
-		public async Task PrepareJsonAsync(T entity, string file) 
+		/// <inheritdoc />
+		public async Task PrepareJsonAsync(T entity, string file)
 		{
 			var responseData = entity;
 			var path = Directory.GetCurrentDirectory() + $"/JsonData";
 
-			//cria a pasta JsonData caso não exista
 			if (!Directory.Exists(path))
 				Directory.CreateDirectory(path);
 

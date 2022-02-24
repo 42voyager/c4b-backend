@@ -10,6 +10,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace backend.Controllers
 {
+	/// <summary>
+	/// Classe <c>ContractController</c> herda <c>ControllerBase</c> controla os
+	/// direcionamentos da API relacionados à assinatura e aceitação dos termos
+	/// do contrato.
+	/// </summary>
 	[ApiController]
 	[Route("[Controller]")]
 	public class ContractController : ControllerBase
@@ -21,8 +26,6 @@ namespace backend.Controllers
 		private readonly ICreatePdfService _createPdfService;
 		private readonly IConfiguration _configuration;
 
-		// private readonly IEmailService<BankInfo> _emailService;
-
 		public ContractController(
 			SellerContext context,
 			IContractService contractService,
@@ -30,7 +33,6 @@ namespace backend.Controllers
 			IRecaptchaService recaptchaService,
 			IConfiguration configuration,
 			ICustomerService customerService
-			// IEmailService<BankInfo> emailService
 		)
 		{
 			_dbContext = context;
@@ -39,12 +41,11 @@ namespace backend.Controllers
 			_recaptchaService = recaptchaService;
 			_configuration = configuration;
 			_customerService = customerService;
-			// _emailService = emailService;
 		}
 
-		// GET all action
 		/// <summary>
-		/// Solicita a lista de todos os Contratos
+		/// Método asíncrono <c>GetAllAsync</c> solicita a lista de todos os
+		/// contratos criados no banco de dados, assinados ou não.
 		/// </summary>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
@@ -56,11 +57,11 @@ namespace backend.Controllers
 			return await _contractService.GetAllAsync();
 		}
 
-		// GET by Id action
 		/// <summary>
-		/// Solicita o customer por id
+		/// Método <c>GetActionResult</c> verifica se existe o contrato solicitado
+		/// pela URL
 		/// </summary>
-		/// <param name="id"> id do customer </param>
+		/// <param name="hash"> Hash do link da URL para assinar o contrato </param>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
 		[HttpGet("{hash}")]
@@ -78,10 +79,9 @@ namespace backend.Controllers
 			return contract;
 		}
 
-
-		// Update contracto action
 		/// <summary>
-		/// Atualiza o contrato com a assinatura
+		/// Método asíncrono <c>Update</c> atualiza o contrato com a assinatura
+		/// e aceitação dos termos
 		/// </summary>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
@@ -104,11 +104,11 @@ namespace backend.Controllers
 			return Ok();
 		}
 
-		// Delete contracto action
 		/// <summary>
-		/// Apaga um contrato linkado com a id do customer
+		/// Método asíncrono <c>Delete</c> apaga um contrato linkado com a id do
+		/// customer
 		/// </summary>
-		/// <param name="id"> id do usuário </param>
+		/// <param name="id"> id do customer </param>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
 		[HttpDelete("{id}")]
