@@ -7,6 +7,7 @@ using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
 using Syncfusion.Drawing;
 using Syncfusion.Pdf.Security;
+using Microsoft.Extensions.Configuration;
 
 namespace backend.Services
 {
@@ -20,6 +21,8 @@ namespace backend.Services
 		private readonly IBankInfoService _bankInfoService;
 		private readonly IContractService _contractService;
 
+		private readonly IConfiguration _configuration;
+
 		/// <summary>
 		/// Este construtor inicializa o <paramref name="customerService"/>, <paramref name="banInfoService"/> e
 		/// <paramref name="contractService"/> que são os serviços a serem utilizados.
@@ -27,11 +30,16 @@ namespace backend.Services
 		/// <param name="customerService">Instância do ICustomerService</param>
 		/// <param name="bankInfoService">Instância do IBanInfoService</param>
 		/// <param name="contractService">Instância do IContractService</param>
-		public CreatePdfService(ICustomerService customerService, IBankInfoService bankInfoService, IContractService contractService)
+		public CreatePdfService(
+			ICustomerService customerService, 
+			IBankInfoService bankInfoService, 
+			IContractService contractService, 
+			IConfiguration configuration)
 		{
 			_customerService = customerService;
 			_bankInfoService = bankInfoService;
 			_contractService = contractService;
+			_configuration = configuration;
 		}
 
 		/// <inheritdoc />
@@ -59,36 +67,26 @@ namespace backend.Services
 			///Specifies key size and encryption algorithm.
 			security.KeySize = PdfEncryptionKeySize.Key128Bit;
 			security.Algorithm = PdfEncryptionAlgorithm.RC4;
-			security.OwnerPassword = "voyager";
+			security.OwnerPassword = string.Format(_configuration.GetSection("Contract:OwnerPassword").Value);
 
 			//It allows printing and accessibility copy content
 			security.Permissions = PdfPermissionsFlags.Print | PdfPermissionsFlags.AccessibilityCopyContent;
 			security.UserPassword = customer.Cnpj;
 
-			string contractTitle = string.Format("Contrato");
+			string contractTitle = string.Format(_configuration.GetSection("Contract:Title").Value);
 			///String for Contract PDF
+			string[] pdfBody =  _configuration.GetSection("Contract:Template").Get<string[]>();
 			string contractText = string.Format(
-				@$"
-				O crédito outorgado a empresa {customer.Company} com CNPJ {customer.Cnpj}
-				pela quantidade de R${customer.Limit},00 dividida em {customer.Installment} parcelas será
-				depositado na seguinte conta:
-
-				{bankinfo.BankName}
-				Agência: {bankinfo.Branch}
-				Conta: {bankinfo.CheckingAccount}
-
-				São Paulo, {currentDate.ToString()}
-
-
-
-				Assinaturas
-
-
-
-
-				Responsável Crédito					Representante da empresa
-						Caique									{customer.Name}
-				"
+				String.Join("\n", pdfBody),
+				customer.Company,
+				customer.Cnpj,
+				customer.Limit,
+				customer.Installment,
+				bankinfo.BankName,
+				bankinfo.Branch,
+				bankinfo.CheckingAccount,
+				currentDate.ToString(),
+				customer.Name
 			);
 			format.Alignment = PdfTextAlignment.Left;
 			///Measure string

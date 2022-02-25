@@ -3,6 +3,7 @@ using backend.Interfaces;
 using backend.Models;
 using backend.Data;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
 {

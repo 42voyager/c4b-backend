@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace backend.Controllers
 {
+	/// <summary>
+	/// Classe <c>FeedbackStartController</c> herda <c>ControllerBase</c> controla os
+	/// redirecionamentos da API relacionados ao envio do Feedback sobre a avaliacao
+	/// do produto
+	/// </summary>
 	[ApiController]
 	[Route("[Controller]")]
 	public class FeedbackStarController : ControllerBase
@@ -24,9 +29,8 @@ namespace backend.Controllers
 			_feedbackStarService = feedbackStarService;
 		}
 
-		// GET all action
 		/// <summary>
-		/// Solicita a lista de todos os feedbackStar
+		/// Metodo <c> GetAll </c> Solicita a lista de todos os feedbacks no sistema
 		/// </summary>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
@@ -38,10 +42,10 @@ namespace backend.Controllers
 			return (await _feedbackStarService.GetAllAsync());
 		}
 
-		// GET all action
 		/// <summary>
-		/// Solicita o feedbackStar por id
+		/// Metodo <c> GetActionResult </c> Solicita o feedbackStar por id
 		/// </summary>
+		/// <param name="id"> id do feedback object </param>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
 		[HttpGet("{id}")]
@@ -56,6 +60,12 @@ namespace backend.Controllers
 			return feedbackStar;
 		}
 
+		/// <summary>
+		/// Metodo <c> Create </c> Crea um novo feedback
+		/// </summary>
+		/// <param name="feedbackStart"> Objeto com a informacao do feedback </param>
+		/// <response code="200"> Se tudo estiver correto </response>
+		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
 		[HttpPost]
 		[ProducesResponseType(typeof(FeedbackStar), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
@@ -66,6 +76,12 @@ namespace backend.Controllers
 			return CreatedAtAction(nameof(Create), new { id = feedbackStar.Id }, feedbackStar);
 		}
 
+		/// <summary>
+		/// Metodo <c> Delete </c> Deleta o feedback
+		/// </summary>
+		/// <param name="id"> id do feedback object </param>
+		/// <response code="200"> Se tudo estiver correto </response>
+		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
 		[HttpDelete("{id}")]
 		[ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]

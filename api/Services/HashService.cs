@@ -111,8 +111,8 @@ namespace backend.Services
         /// </sumary>
         /// <param name="key"> Chave para desencriptar o hash </param>
         /// <param name="hash"> O hash que vc do qual você precisa pegar o id </param>
-        /// <returns> Com sucesso retorna o id escondido no hash. </return>
-        /// <returns> Em caso de falha retorna -1 </return>
+        /// <returns> Com sucesso retorna o id escondido no hash. </returns>
+        /// <returns> Em caso de falha retorna -1 </returns>
         public static int GetIdFromHash(string key, string hash){
             if (hash == null)
                 return -1;

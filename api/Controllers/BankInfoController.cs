@@ -10,11 +10,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace backend.Controllers
 {
-/// <summary>
-/// Classe <c>BankInfoController</c> herda <c>ControllerBase</c> controla os
-/// direcionamentos da API relacionados ao cadastro dos dados bancários no
-/// sistema depois da solicitação inicial ter sido aprovada.
-/// </summary>
+	/// <summary>
+	/// Classe <c>BankInfoController</c> herda <c>ControllerBase</c> controla os
+	/// direcionamentos da API relacionados ao cadastro dos dados bancários no
+	/// sistema depois da solicitação inicial ter sido aprovada.
+	/// </summary>
 	[ApiController]
 	[Route("[Controller]")]
 	public class BankInfoController : ControllerBase
@@ -65,7 +65,6 @@ namespace backend.Controllers
 		/// bancários</param>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
-		/// </summary>
 		[HttpGet("{hash}")]
 		[ProducesResponseType(typeof(List<BankInfo>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
