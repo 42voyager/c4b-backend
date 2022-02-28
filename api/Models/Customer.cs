@@ -36,12 +36,15 @@ namespace backend.Models
 		public string Cnpj { get; set; }
 
 		[Required(ErrorMessage = "O nome da empresa obrigatório.")]
-		[StringLength(100, ErrorMessage = "O nome da empresa deve ser menor ou igual a 100 caracteres!")]
-		[MinLength(2, ErrorMessage = "O nome da empresa deve ser maior ou igual a 2 caracteres!")]
+		[StringLength(100, 
+			ErrorMessage = "O nome da empresa deve ser menor ou igual a 100 caracteres!")]
+		[MinLength(2, 
+			ErrorMessage = "O nome da empresa deve ser maior ou igual a 2 caracteres!")]
 		public string Company { get; set; }
 
 		[Required]
-		[Range(typeof(bool), "true", "true", ErrorMessage = "Precisa aceitar os termos e condições")]
+		[Range(typeof(bool), "true", "true", 
+			ErrorMessage = "Precisa aceitar os termos e condições")]
 		public bool Optin { get; set; }
 		public string IPAddress { get; set; }
 		public string OperatingSystem { get; set; }

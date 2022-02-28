@@ -66,9 +66,11 @@ namespace backend.Services
 		{
 			var email = new Email();
 			// The email template coming from the appsettings requires a hash value
-			string[] templateBody = _configuration.GetSection("EmailTemplates:BankInfo:Body").Get<string[]>();
+			string[] templateBody = _configuration.GetSection("EmailTemplates:BankInfo:Body")
+				.Get<string[]>();
 
-			email.Subject = _configuration.GetSection("EmailTemplates:BankInfo:Subject").Value;
+			email.Subject = _configuration.GetSection("EmailTemplates:BankInfo:Subject")
+				.Value;
 			email.Body = string.Format(
 				String.Join(" ", templateBody),
 				hash

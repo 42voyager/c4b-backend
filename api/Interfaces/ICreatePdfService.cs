@@ -12,8 +12,8 @@ namespace backend.Interfaces
 	public interface ICreatePdfService
 	{
 		/// <summary>
-		/// Este metódo <c>CreatePdf</c> cria um PDF em string com a informação completa do usuário: crédito, parcelas,
-		/// dados bancários, CNPJ e contato.
+		/// Este metódo <c>CreatePdf</c> cria um PDF em string com a informação completa do usuário: 
+		/// crédito, parcelas, dados bancários, CNPJ e contato.
 		/// </summary>
 		/// <param name="customerID">ID do usuário do banco de dados</param>
 		Task CreateContractPdf(int customerID);

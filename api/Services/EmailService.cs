@@ -39,7 +39,6 @@ namespace backend.Services
 				_configuration.GetSection("Email:MessageFrom:Name").Value,
 				_configuration.GetSection("Email:MessageFrom:Email").Value)
 			);
-			// For now, We sent the email only to the Administrator. Later we plan to send a confirmation email to the customer
 			message.To.Add(new MailboxAddress(email.RecipientName, email.RecipientEmail));
 			message.Subject = email.Subject;
 			var	builder = new BodyBuilder();
@@ -50,7 +49,11 @@ namespace backend.Services
 
 			using (var client = new SmtpClient(new ProtocolLogger ("smtp.log")))
 			{
-				await client.ConnectAsync(_configuration.GetSection("Email:SmtpHost").Value, 587, false);
+				await client.ConnectAsync(
+					_configuration.GetSection("Email:SmtpHost").Value, 
+					587, 
+					false
+				);
 				// Note: only needed if the SMTP server requires authentication
 				await client.AuthenticateAsync(
 					_configuration.GetSection("Email:SmtpUser").Value, 

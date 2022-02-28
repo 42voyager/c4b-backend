@@ -16,7 +16,8 @@ namespace backend.Models
 
 	public class Errors
 	{
-		Error DBCreationError = new Error("DATABASE_ERROR", "there was an error while creating the database", 1);
+		Error DBCreationError = 
+			new Error("DATABASE_ERROR", "there was an error while creating the database", 1);
 		public Error DbCreationError { get { return DBCreationError; } }
 	}
 

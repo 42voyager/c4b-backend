@@ -122,13 +122,15 @@ namespace backend.Controllers
 		private async Task<Email> PrepareEmailFeedback(Feedback feedback)
 		{
 			DateTime localDate = DateTime.Now;
-			string attachmentPath = Directory.GetCurrentDirectory() + $"/JsonData/jsonDataFeedback-{feedback.Id}.json";
+			string attachmentPath = Directory.GetCurrentDirectory() 
+				+ $"/JsonData/jsonDataFeedback-{feedback.Id}.json";
 			var email = new Email();
 
 			// cria o caminho do arquivo json que será anexado ao email
 			await _emailService.PrepareJsonAsync(feedback, attachmentPath);
 			email.AttachmentPath = attachmentPath;
-			string[] templateBody = _configuration.GetSection("EmailTemplates:EmailFeedback:Body").Get<string[]>();
+			string[] templateBody = _configuration.GetSection("EmailTemplates:EmailFeedback:Body")
+				.Get<string[]>();
 			email.Subject = string.Format(
 				_configuration.GetSection("EmailTemplates:EmailFeedback:Subject").Value,
 				feedback.Name

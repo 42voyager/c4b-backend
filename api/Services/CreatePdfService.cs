@@ -24,7 +24,8 @@ namespace backend.Services
 		private readonly IConfiguration _configuration;
 
 		/// <summary>
-		/// Este construtor inicializa o <paramref name="customerService"/>, <paramref name="banInfoService"/> e
+		/// Este construtor inicializa o <paramref name="customerService"/>, 
+		/// <paramref name="banInfoService"/> e
 		/// <paramref name="contractService"/> que são os serviços a serem utilizados.
 		/// </summary>
 		/// <param name="customerService">Instância do ICustomerService</param>
@@ -67,15 +68,18 @@ namespace backend.Services
 			//Specifies key size and encryption algorithm.
 			security.KeySize = PdfEncryptionKeySize.Key128Bit;
 			security.Algorithm = PdfEncryptionAlgorithm.RC4;
-			security.OwnerPassword = string.Format(_configuration.GetSection("Contract:OwnerPassword").Value);
+			security.OwnerPassword = string
+				.Format(_configuration.GetSection("Contract:OwnerPassword").Value);
 
 			//It allows printing and accessibility copy content
 			security.Permissions = PdfPermissionsFlags.Print | PdfPermissionsFlags.AccessibilityCopyContent;
 			security.UserPassword = customer.Cnpj;
 
-			string contractTitle = string.Format(_configuration.GetSection("Contract:Title").Value);
+			string contractTitle = string
+				.Format(_configuration.GetSection("Contract:Title").Value);
 			// String for Contract PDF
-			string[] pdfBody =  _configuration.GetSection("Contract:Template").Get<string[]>();
+			string[] pdfBody =  _configuration
+				.GetSection("Contract:Template").Get<string[]>();
 			string contractText = string.Format(
 				String.Join("\n", pdfBody),
 				customer.Company,

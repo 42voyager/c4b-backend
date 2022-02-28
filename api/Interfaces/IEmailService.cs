@@ -16,11 +16,13 @@ namespace backend.Interfaces
 	{
 
 		/// <summary>
-		/// Este método <c>SendEmailAsync</c> envia um email recebido pelo param <paramref name="email"/>.
+		/// Este método <c>SendEmailAsync</c> envia um email recebido pelo param 
+		/// <paramref name="email"/>.
 		/// O envio é feito através do SmtpClient utilizando a library <c>MailKit</c>.
 		/// Este método é assíncrono.
 		/// </summary>
-		/// <param name="email">Intância da classe <c>Email</c> a contendo todos os dados a serem enviado.</param>
+		/// <param name="email">Intância da classe <c>Email</c>
+		/// a contendo todos os dados a serem enviado.</param>
 		/// <returns>Uma task.</returns>
 		Task SendEmailAsync(Email email);
 

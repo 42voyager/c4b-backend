@@ -97,7 +97,8 @@ namespace backend.Controllers
 				return NotFound();
 			if (contract.AcceptTerms && contract.AuthorizeSCR && contract.ExistsPEP)
 			{
-				if (await _customerService.UpdateStatusAsync(existingContract.CustomerID, Status.Contract) == false)
+				if (await _customerService
+					.UpdateStatusAsync(existingContract.CustomerID, Status.Contract) == false)
 					return NotFound();
 			}
 			await _contractService.UpdateAsync(contract);

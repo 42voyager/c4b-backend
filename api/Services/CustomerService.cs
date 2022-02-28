@@ -23,7 +23,8 @@ namespace backend.Services
 
 		/// <summary>
 		/// Este construtor inicializa o <paramref name="context"/> do banco de dados,
-		/// as <paramref name="configuration"/> do arquivo appSettings e a instância do <paramref name="emailService"/>.
+		/// as <paramref name="configuration"/> do arquivo appSettings 
+		/// e a instância do <paramref name="emailService"/>.
 		/// </summary>
 		/// <param name="context">Instância do banco de dados.</param>
 		/// <param name="configuration">Instância do IConfiguration.</param>
@@ -126,13 +127,15 @@ namespace backend.Services
 		public async Task<Email> PrepareEmail(Customer customer)
 		{
 			DateTime localDate = DateTime.Now;
-			string attachmentPath = Directory.GetCurrentDirectory() + $"/JsonData/jsonDataCustomer-{customer.Id}.json";
+			string attachmentPath = Directory.GetCurrentDirectory() 
+				+ $"/JsonData/jsonDataCustomer-{customer.Id}.json";
 			var email = new Email();
 
 			await _emailService.PrepareJsonAsync(customer, attachmentPath);
 			email.AttachmentPath = attachmentPath;
 
-			string[] templateBody = _configuration.GetSection("EmailTemplates:CustomerRequest:Body").Get<string[]>();
+			string[] templateBody = _configuration
+				.GetSection("EmailTemplates:CustomerRequest:Body").Get<string[]>();
 			email.Subject = string.Format(
 				_configuration.GetSection("EmailTemplates:CustomerRequest:Subject").Value,
 				customer.Company

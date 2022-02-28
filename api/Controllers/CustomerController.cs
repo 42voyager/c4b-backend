@@ -103,7 +103,10 @@ namespace backend.Controllers
 			{
 				var userId =  _customerService.AddAsync(customer);
 				customer.Id = await userId;
-				string cryptedUserId = HashService.EncryptString(_configuration.GetSection("Aes:Key").Value, customer.Id.ToString() + customer.Cnpj);
+				string cryptedUserId = HashService.EncryptString(
+					_configuration.GetSection("Aes:Key").Value, 
+					customer.Id.ToString() + customer.Cnpj
+				);
 
 				// Email enviado para informar ao administrador do sistema a
 				// solicitação do customer

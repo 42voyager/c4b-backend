@@ -28,7 +28,8 @@ namespace backend.Services
 		}
 
         /// <summary>
-        /// Este método <c>EncryptString</c> recebe a <paramref name="key"/> e <paramref name="plainText"/>
+        /// Este método <c>EncryptString</c> recebe a <paramref name="key"/> 
+        /// e <paramref name="plainText"/>
         /// e encriptografa isso criando um hash.
         /// </summary>
         /// <param name="key">Chave de criptografia</param>
@@ -48,7 +49,8 @@ namespace backend.Services
 
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
+                    using (CryptoStream cryptoStream = 
+                        new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
                     {
                         using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
                         {
@@ -83,7 +85,9 @@ namespace backend.Services
             }
             catch (Exception exception)
             {
-                Console.WriteLine($"Ocorreu um erro ao tentar desincriptar o hash {cipherText}:\n\n{exception}\n");
+                Console.WriteLine(
+                    $"Ocorreu um erro ao tentar desincriptar o hash {cipherText}:\n\n{exception}\n"
+                );
                 return null;
             }
             using (Aes aes = Aes.Create())
@@ -94,7 +98,8 @@ namespace backend.Services
 
                 using (MemoryStream memoryStream = new MemoryStream(buffer))
                 {
-                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
+                    using (CryptoStream cryptoStream = 
+                        new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
                     {
                         using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
                         {

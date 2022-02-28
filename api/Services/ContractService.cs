@@ -48,7 +48,8 @@ namespace backend.Services
 		/// <inheritdoc />
 		public async Task<bool> UpdateAsync(Contract updateContract)
 		{
-			var contract = await _dbContext.Contracts.FirstOrDefaultAsync(p => p.CustomerID == updateContract.CustomerID);
+			var contract = await _dbContext.Contracts
+				.FirstOrDefaultAsync(p => p.CustomerID == updateContract.CustomerID);
 			if (contract == null)
 				return false;
 			DateTime currentDate = DateTime.Now;

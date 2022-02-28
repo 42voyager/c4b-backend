@@ -97,7 +97,10 @@ namespace backend.Controllers
 
 			if (isHuman == true)
 			{
-				var customerID = HashService.GetIdFromHash(_configuration.GetSection("Aes:Key").Value, bankInfo.hash);
+				var customerID = HashService.GetIdFromHash(
+					_configuration.GetSection("Aes:Key").Value, 
+					bankInfo.hash
+				);
 				bankInfo.CustomerID = customerID;
 				var userId = await _bankInfoService.AddAsync(bankInfo);
 				if (await _customerService.UpdateStatusAsync(userId, Status.BankInfo) == false)
