@@ -21,7 +21,10 @@ namespace backend
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// </summary>
+        /// <param name="services"> Service Collection </param>
         public void ConfigureServices(IServiceCollection services)
         {
 
@@ -48,7 +51,11 @@ namespace backend
             services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        /// <param name="app"> Application builder</param>
+        /// <param name="env"> Env </param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -57,8 +64,6 @@ namespace backend
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "backend v1"));
             }
-
-            // app.UseHttpsRedirection();
 
             app.UseRouting();
 

@@ -7,9 +7,12 @@ using backend.Interfaces;
 using backend.Data;
 using Microsoft.Extensions.Configuration;
 
-
 namespace backend.Controllers
 {
+	/// <summary>
+	/// Classe <c>ReportController</c> herda <c>ControllerBase</c> controla os
+	/// redirecionamentos da API para gerar relatorios dos usuarios/customers
+	/// </summary>
 	[ApiController]
 	[Route("[Controller]")]
 	public class ReportController : ControllerBase
@@ -17,8 +20,6 @@ namespace backend.Controllers
 		private readonly SellerContext _dbContext;
 		private readonly ICustomerService _customerService;
 		private readonly IConfiguration _configuration;
-
-		// private readonly IEmailService<BankInfo> _emailService;
 
 		public ReportController(
 			SellerContext context,
@@ -33,7 +34,7 @@ namespace backend.Controllers
 
 		// GET all action
 		/// <summary>
-		/// Solicita a lista de todos os Users con o status
+		/// Solicita o relatorio de todos os Users con seus status
 		/// </summary>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>

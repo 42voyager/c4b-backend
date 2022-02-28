@@ -5,13 +5,16 @@ using backend.Models;
 using backend.Data;
 using backend.Interfaces;
 using backend.Services;
-using System;
 using System.Threading.Tasks;
-using System.IO;
 using Microsoft.Extensions.Configuration;
 
 namespace backend.Controllers
 {
+	/// <summary>
+	/// Classe <c>CustomerController</c> herda <c>ControllerBase</c> controla os
+	/// redirecionamentos da API relacionados ao cadastro de customers dentro
+	/// do sistema
+	/// </summary>
 	[ApiController]
 	[Route("[Controller]")]
 	public class CustomerController : ControllerBase
@@ -41,9 +44,9 @@ namespace backend.Controllers
 			_bankInfoService = bankInfoService;
 		}
 
-		// GET all action
 		/// <summary>
-		/// Solicita a lista de todos os customers
+		/// Método <c>GetAll</c> solicita a lista de todos os customers cadastrados
+		/// no sistema com seus atributos
 		/// </summary>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
@@ -55,18 +58,19 @@ namespace backend.Controllers
 			return ( await _customerService.GetAllAsync());
 		}
 
-		// GET by Id action
 		/// <summary>
-		/// Solicita o customer por id
+		/// Método asíncrono <c>GetActionResult</c> solicita o customer por id
 		/// </summary>
-		/// <param name="id"> id do customer </param>
+		/// <param name="hash"> Has da URL para extraer a ID do customer </param>
 		/// <response code="200"> Se tudo estiver correto </response>
 		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
+		/// <returns>Retorna o customer se ele existe.</returns>
 		[HttpGet("{hash}")]
 		[ProducesResponseType(typeof(Customer), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<Customer>> GetActionResult(string hash)
 		{
+			// id é extraído do hash da URL
 			var id = HashService.GetIdFromHash(_configuration.GetSection("Aes:Key").Value, hash);
 			if (id == -1)
 				return NotFound();
@@ -76,6 +80,17 @@ namespace backend.Controllers
 			return customer;
 		}
 
+		/// <summary>
+		/// Método <c>Create</c> cria um customer dentro do sistema e guarda no
+		/// banco de dados. Envia um email para o customer avisando que a solicitação
+		/// foi feita e um email com a solicitação e o arquivo json dos dados do
+		/// customer para o administrador do sistema.
+		/// </summary>
+		/// <param name="customer">Objeto customer com seus atributos</param>
+		/// <response code="200"> Se tudo estiver correto </response>
+		/// <response code="429"> Se o servidor não conseguir responder a solicitação
+		/// por estar sobrecarregado</response>
+		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
 		[HttpPost]
 		[ProducesResponseType(typeof(Customer), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
@@ -88,17 +103,20 @@ namespace backend.Controllers
 			{
 				var userId =  _customerService.AddAsync(customer);
 				customer.Id = await userId;
-				string cryptedUserId = HashService.EncryptString(_configuration.GetSection("Aes:Key").Value, customer.Id.ToString() + customer.Cnpj);
-				// var decryptedUserId = HashService.DecryptString(_configuration.GetSection("Aes:Key").Value, cryptedUserId);
+				string cryptedUserId = HashService.EncryptString(
+					_configuration.GetSection("Aes:Key").Value, 
+					customer.Id.ToString() + customer.Cnpj
+				);
 
-				// Email informing the Bank about the new customer request				
-				var emailToBank = await prepareEmail(customer);
+				// Email enviado para informar ao administrador do sistema a
+				// solicitação do customer
+				var emailToBank = await _customerService.PrepareEmail(customer);
 				var sendBank = _emailService.SendEmailAsync(emailToBank);
 
-				// Email sending the customer a form requesting their bank information
+				// Email enviado ao customer para solicitar os dados bancários
 				var emailToCustomer = _bankInfoService.PrepareEmail(customer, cryptedUserId);
 				var sendCustomer = _emailService.SendEmailAsync(emailToCustomer);
-				
+
 				await Task.WhenAll(userId);
 				return CreatedAtAction(nameof(Create), new { id = customer.Id }, customer);
 			}
@@ -106,6 +124,15 @@ namespace backend.Controllers
 				return new StatusCodeResult(429);
 		}
 
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="id">ID do customer</param>
+		/// <param name="customer">Objeto do customer com todos os atributos</param>
+		/// <response code="200"> Se tudo estiver correto </response>
+		/// <response code="400"> Se não há uma ID na solicitação</response>
+		/// <response code="404"> Se a ID do usuário não existe</response>
+		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
 		[HttpPut("{id}")]
 		[ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
@@ -122,6 +149,13 @@ namespace backend.Controllers
 			return Ok();
 		}
 
+		/// <summary>
+		/// Método <c>Delete</c> apaga o customer do banco de dados
+		/// </summary>
+		/// <param name="id">ID do customer</param>
+		/// <response code="200"> Se tudo estiver correto </response>
+		/// <response code="404"> Se a ID do usuário não existe</response>
+		/// <response code="500"> Se ocorrerem erros de processamento no servidor </response>
 		[HttpDelete("{id}")]
 		[ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
@@ -132,28 +166,6 @@ namespace backend.Controllers
 			if (customer == false)
 				return NotFound();
 			return Ok();
-		}
-
-		private async Task<Email> prepareEmail(Customer customer)
-		{
-			DateTime localDate = DateTime.Now;
-			string attachmentPath = Directory.GetCurrentDirectory() + $"/JsonData/jsonDataCustomer-{customer.Id}.json";
-			var email = new Email();
-
-			await _emailService.PrepareJsonAsync(customer, attachmentPath);
-			email.AttachmentPath = attachmentPath;
-			email.Subject = $"Nova solicitação de crédito: Empresa {customer.Company}";
-			email.Body = string.Format(
-					@$"<div style='max-width: 100%; width: calc(100% - 60px); padding: 30px 30px; text-align: center;'>
-					<h1 style='font-size= 14px; '>Nova Solicitação <br>{localDate.ToString()}</h1> 
-					<p>Nova solicitação de crédito, feita pela empresa {customer.Company}</p>
-					<p>Todas as informações disponiveis estão guardadas no json anexado!</p>
-					<p></p><br>
-					<hr style='border: 2px solid #b29475;'>
-  					<p style='padding: 10px; color: #b29475;'>Equipe Voyager.</p>
-					</div>");
-			email.Recipient = _configuration.GetSection("Email:MessageTo").Value;
-			return email;
 		}
 	}
 }
