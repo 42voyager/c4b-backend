@@ -142,7 +142,8 @@ namespace backend.Services
 				localDate.ToLongDateString(),
 				customer.Company
 			);
-			email.Recipient = _configuration.GetSection("Email:MessageTo").Value;
+			email.RecipientEmail = _configuration.GetSection("Email:MessageTo:Email").Value;
+			email.RecipientName = _configuration.GetSection("Email:MessageTo:Name").Value;
 			return email;
 		}
 	}

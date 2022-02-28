@@ -2,10 +2,11 @@ using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace backend.Attributes {
-	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
+
 	/// <summary>Classe <c>CustomCPFAttribute</c> herda <c>ValidationAttribute</c>
 	/// verifica se um CNPJ ou CPF digitado são válidos. (Não verifica se estão
 	/// cadastrados na Receita Federal).</summary>
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
 	public class CustomCPFAttribute : ValidationAttribute
 	{
 		/// <summary>

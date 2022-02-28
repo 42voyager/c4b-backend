@@ -133,6 +133,8 @@ namespace backend.Controllers
 				_configuration.GetSection("EmailTemplates:EmailFeedback:Subject").Value,
 				feedback.Name
 			);
+			email.RecipientEmail = _configuration.GetSection("Email:MessageTo:Email").Value;
+			email.RecipientName = _configuration.GetSection("Email:MessageTo:Name").Value;
 			email.Body = string.Format(
 				String.Join(" ", templateBody),
 				localDate.ToLongDateString(),

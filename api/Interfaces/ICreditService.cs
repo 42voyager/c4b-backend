@@ -16,16 +16,5 @@ namespace backend.Interfaces
 		/// <param name="credit">Intância da classe Credit contendo o limite e as parcelas.</param>
 		/// <returns>O valor aproximado do calculo.</returns>
 		double CalculateIncome(Credit credit);
-
-		/// <summary>
-		/// Este método <c>AproximateToRange</c> pega o <paramref name="input"/>
-		/// e o <paramref name="range"/> e faz o calculo para deixar o <paramref name="input"/>
-		/// mais próximo do <paramref name="range"/>.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <param name="range"></param>
-		/// <returns></returns>
-		double AproximateToRange(double input, double range);
-
 	}
 }

@@ -9,6 +9,8 @@ namespace backend.Models
 
 		public string AttachmentPath { get; set; }
 
-		public string Recipient {get; set; }
+		public string RecipientEmail {get; set; }
+
+		public string RecipientName {get; set;}
 	}
 }

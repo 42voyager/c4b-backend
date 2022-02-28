@@ -73,7 +73,8 @@ namespace backend.Services
 				String.Join(" ", templateBody),
 				hash
 			);
-			email.Recipient = customer.Email;
+			email.RecipientEmail = customer.Email;
+			email.RecipientName = customer.Name;
 			return email;
 		}
 	}

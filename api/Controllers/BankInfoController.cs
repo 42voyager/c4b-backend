@@ -103,7 +103,7 @@ namespace backend.Controllers
 				if (await _customerService.UpdateStatusAsync(userId, Status.BankInfo) == false)
 					return NotFound();
 
-				await _createPdfService.CreatePdf(bankInfo.CustomerID);
+				await _createPdfService.CreateContractPdf(bankInfo.CustomerID);
 				return CreatedAtAction(nameof(Create), new { id = bankInfo.CustomerID }, bankInfo);
 			}
 			else

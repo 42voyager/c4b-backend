@@ -35,9 +35,12 @@ namespace backend.Services
 		public async Task SendEmailAsync(Email email)
 		{
 			var message = new MimeMessage();
-			message.From.Add(new MailboxAddress("Voyaguer", _configuration.GetSection("Email:MessageFrom").Value));
+			message.From.Add(new MailboxAddress(
+				_configuration.GetSection("Email:MessageFrom:Name").Value,
+				_configuration.GetSection("Email:MessageFrom:Email").Value)
+			);
 			// For now, We sent the email only to the Administrator. Later we plan to send a confirmation email to the customer
-			message.To.Add(new MailboxAddress("Banco ABC Admin", email.Recipient));
+			message.To.Add(new MailboxAddress(email.RecipientName, email.RecipientEmail));
 			message.Subject = email.Subject;
 			var	builder = new BodyBuilder();
 			builder.HtmlBody = email.Body;
@@ -49,7 +52,10 @@ namespace backend.Services
 			{
 				await client.ConnectAsync(_configuration.GetSection("Email:SmtpHost").Value, 587, false);
 				// Note: only needed if the SMTP server requires authentication
-				await client.AuthenticateAsync(_configuration.GetSection("Email:SmtpUser").Value, _configuration.GetSection("Email:SmtpPassword").Value);
+				await client.AuthenticateAsync(
+					_configuration.GetSection("Email:SmtpUser").Value, 
+					_configuration.GetSection("Email:SmtpPassword").Value
+				);
 				await client.SendAsync(message);
 				await client.DisconnectAsync(true);
 			}

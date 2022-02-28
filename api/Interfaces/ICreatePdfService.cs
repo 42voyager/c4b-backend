@@ -16,7 +16,7 @@ namespace backend.Interfaces
 		/// dados bancários, CNPJ e contato.
 		/// </summary>
 		/// <param name="customerID">ID do usuário do banco de dados</param>
-		Task CreatePdf(int customerID);
+		Task CreateContractPdf(int customerID);
 
 		/// <summary>
 		/// Este metódo <c>CreateContract</c> salva o contrato no banco de dados.

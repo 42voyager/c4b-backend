@@ -25,8 +25,7 @@ namespace backend.Services
 			return AproximateToRange(Income, 50000);
 		}
 
-		/// <inheritdoc />
-		public double AproximateToRange(double input, double range)
+		private double AproximateToRange(double input, double range)
 		{
 			if (input < range) return range;
 
