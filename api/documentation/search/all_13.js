@@ -1,0 +1,6 @@
+var searchData=
+[
+  ['update_0',['Update',['../classbackend_1_1Controllers_1_1ContractController.html#a89e07a7dde52c1596498ce4e3ac4353e',1,'backend.Controllers.ContractController.Update()'],['../classbackend_1_1Controllers_1_1CustomerController.html#ab2da0afc01e34001d94142a0a0727674',1,'backend.Controllers.CustomerController.Update()']]],
+  ['updateasync_1',['UpdateAsync',['../interfacebackend_1_1Interfaces_1_1IContractService.html#a81072149677ce02a8249f2036f00ad63',1,'backend.Interfaces.IContractService.UpdateAsync()'],['../interfacebackend_1_1Interfaces_1_1ICustomerService.html#a80414f6949eef6c4cb0b8593070c16bf',1,'backend.Interfaces.ICustomerService.UpdateAsync()'],['../classbackend_1_1Services_1_1ContractService.html#acdede65545c42983332b77053d69d479',1,'backend.Services.ContractService.UpdateAsync()'],['../classbackend_1_1Services_1_1CustomerService.html#a350e28eff502836a6b4c2eac18481c2a',1,'backend.Services.CustomerService.UpdateAsync()']]],
+  ['updatestatusasync_2',['UpdateStatusAsync',['../interfacebackend_1_1Interfaces_1_1ICustomerService.html#aa9f86265af39147f121944dacacfe667',1,'backend.Interfaces.ICustomerService.UpdateStatusAsync()'],['../classbackend_1_1Services_1_1CustomerService.html#a1603434366370b9cca99347c99b64ac2',1,'backend.Services.CustomerService.UpdateStatusAsync()']]]
+];
