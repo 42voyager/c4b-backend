@@ -52,7 +52,9 @@ We released it for people who wants a boilerplate for a similar Restful API proj
 
 :heavy_check_mark: Pdf Contract Service
 
-:heavy_check_mark: E2E Tests for sites that runs with this API 
+:heavy_check_mark: E2E Tests for sites that uses this API
+
+:heavy_check_mark: Swagger support
 
 ## :rocket: Technologies ##
 
@@ -81,6 +83,12 @@ dotnet run --project api/backend.csproj
 
 # The Swagger server will initialize in http://localhost:5000/swagger/index.html
 ```
+
+## :eyes: Swagger ##
+
+The app on development will enable the Swagger Service. It can be accessed by running http://localhost:5000/swagger/index.html on the local development machine.
+
+![image](https://user-images.githubusercontent.com/24798804/156201712-80e84990-16ba-46ff-b90e-f91229503eae.png)
 
 ## :memo: License ##
 
