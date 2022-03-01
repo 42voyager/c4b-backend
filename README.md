@@ -86,7 +86,7 @@ The app on development will enable the Swagger Service. It can be accessed by ru
 
 ![image](https://user-images.githubusercontent.com/24798804/156201712-80e84990-16ba-46ff-b90e-f91229503eae.png)
 
-## :honeybee: Issues ##
+## :rotating_light: Issues ##
 
 Feel free to submit issues and enhancement requests.
 
