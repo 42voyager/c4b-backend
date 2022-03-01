@@ -86,6 +86,26 @@ The app on development will enable the Swagger Service. It can be accessed by ru
 
 ![image](https://user-images.githubusercontent.com/24798804/156201712-80e84990-16ba-46ff-b90e-f91229503eae.png)
 
+Issues
+------
+
+Feel free to submit issues and enhancement requests.
+
+Please use [Esri Support](https://developers.arcgis.com/support/) to report ArcGIS API or SDK specific bugs and errors.
+
+Contributing
+------------
+
+Please refer to each project's style and contribution guidelines for submitting patches and additions. In general, we follow the "fork-and-pull" Git workflow.
+
+ 1. **Fork** the repo on GitHub
+ 2. **Clone** the project to your own machine
+ 3. **Commit** changes to your own branch
+ 4. **Push** your work back up to your fork
+ 5. Submit a **Pull request** so that we can review your changes
+
+NOTE: Be sure to merge the latest from "upstream" before making a pull request!
+
 ## :memo: License ##
 
 This project is under license from MIT. For more details, see the [LICENSE](LICENSE.md) file.
