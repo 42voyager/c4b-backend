@@ -1,5 +1,5 @@
 <div align="center" id="top"> 
-  <img src="./.github/app.gif" alt="Backend" />
+  <img src="./assets/logo_c4b.png" alt="Backend" />
 
   &#xa0;
 
