@@ -63,9 +63,6 @@ The following tools were used in this project:
 ## :white_check_mark: Requirements ##
 Ubuntu was used to implement the project, so the .net SDK is required to be installed first. See Microsoft docs in this [link](https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu)
 
-Then, once in the backend folder just run the following
-
-
 ## :checkered_flag: Starting ##
 
 
