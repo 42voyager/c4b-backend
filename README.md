@@ -47,8 +47,11 @@ We released it for people who wants a boilerplate for a similar Restful API proj
 ## :sparkles: Features ##
 
 :heavy_check_mark: Fully Restfull API
+
 :heavy_check_mark: Email Service
+
 :heavy_check_mark: Pdf Contract Service
+
 :heavy_check_mark: E2E Tests for sites that runs with this API 
 
 ## :rocket: Technologies ##
