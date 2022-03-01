@@ -86,15 +86,11 @@ The app on development will enable the Swagger Service. It can be accessed by ru
 
 ![image](https://user-images.githubusercontent.com/24798804/156201712-80e84990-16ba-46ff-b90e-f91229503eae.png)
 
-Issues
-------
+## :honeybee: Issues ##
 
 Feel free to submit issues and enhancement requests.
 
-Please use [Esri Support](https://developers.arcgis.com/support/) to report ArcGIS API or SDK specific bugs and errors.
-
-Contributing
-------------
+## :waxing_crescent_moon: Contributing ##
 
 Please refer to each project's style and contribution guidelines for submitting patches and additions. In general, we follow the "fork-and-pull" Git workflow.
 
